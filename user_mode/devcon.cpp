@@ -657,26 +657,27 @@ _tmain(_In_ int argc, _In_reads_(argc) PWSTR* argv)
     cmd = argv[firstArg];
     firstArg++;
     for(dispIndex = 0;DispatchTable[dispIndex].cmd;dispIndex++) {
-        if ((_tcsicmp(cmd,DispatchTable[dispIndex].cmd) == 0) &&
-            (argc >= firstArg)) {
-            retval = DispatchTable[dispIndex].func(NULL,flags,argc-firstArg,argv+firstArg);
-            switch(retval) {
-                case EXIT_USAGE:
-                    printf("bad usage\n");
-                    break;
-                case EXIT_REBOOT:
-                    if(autoReboot) {
-                        Reboot();
-                    }
-                    break;
-                case EXIT_OK:
-                    break;
-                default:
-                    printf("unknown error\n");
-                    break;
-            }
-            return retval;
+        if ((_tcsicmp(cmd,DispatchTable[dispIndex].cmd) != 0) ||
+            (argc < firstArg)) {
+            continue;
         }
+        retval = DispatchTable[dispIndex].func(NULL,flags,argc-firstArg,argv+firstArg);
+        switch(retval) {
+            case EXIT_USAGE:
+                printf("bad usage\n");
+                break;
+            case EXIT_REBOOT:
+                if(autoReboot) {
+                    Reboot();
+                }
+                break;
+            case EXIT_OK:
+                break;
+            default:
+                printf("unknown error\n");
+                break;
+        }
+        return retval;
     }
     printf("bad usage\n");
     return EXIT_USAGE;
