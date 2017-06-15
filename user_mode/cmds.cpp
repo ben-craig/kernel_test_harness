@@ -14,6 +14,7 @@ Abstract:
 --*/
 
 #include "devcon.h"
+#include <newdev.h>
 
 struct GenericContext {
     DWORD count;
@@ -38,9 +39,7 @@ Return Value:
 
 --*/
 {
-    HMODULE newdevMod = NULL;
     int failcode = EXIT_FAIL;
-    UpdateDriverForPlugAndPlayDevicesProto UpdateFn;
     BOOL reboot = FALSE;
     DWORD flags = 0;
     DWORD res;
@@ -65,22 +64,9 @@ Return Value:
     inf = InfPath;
     flags |= INSTALLFLAG_FORCE;
 
-    //
-    // make use of UpdateDriverForPlugAndPlayDevices
-    //
-    newdevMod = LoadLibrary(TEXT("newdev.dll"));
-    if(!newdevMod) {
-        goto final;
-    }
-    UpdateFn = (UpdateDriverForPlugAndPlayDevicesProto)GetProcAddress(newdevMod,UPDATEDRIVERFORPLUGANDPLAYDEVICES);
-    if(!UpdateFn)
-    {
-        goto final;
-    }
-
     FormatToStream(stdout,inf ? MSG_UPDATE_INF : MSG_UPDATE,hwid,inf);
 
-    if(!UpdateFn(NULL,hwid,inf,flags,&reboot)) {
+    if(!UpdateDriverForPlugAndPlayDevices(NULL,hwid,inf,flags,&reboot)) {
         goto final;
     }
 
@@ -89,10 +75,6 @@ Return Value:
     failcode = reboot ? EXIT_REBOOT : EXIT_OK;
 
 final:
-
-    if(newdevMod) {
-        FreeLibrary(newdevMod);
-    }
 
     return failcode;
 }

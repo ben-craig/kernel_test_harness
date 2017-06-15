@@ -41,26 +41,7 @@ void DelMultiSz(_In_opt_ __drv_freesMem(object) PZPWSTR Array);
 int cmdInstall(LPCTSTR inf, LPCTSTR hwid);
 int cmdRemove(LPCTSTR hwid);
 
-
-//
-// UpdateDriverForPlugAndPlayDevices
-//
-typedef BOOL (WINAPI *UpdateDriverForPlugAndPlayDevicesProto)(_In_opt_ HWND hwndParent,
-                                                              _In_ LPCTSTR HardwareId,
-                                                              _In_ LPCTSTR FullInfPath,
-                                                              _In_ DWORD InstallFlags,
-                                                              _Out_opt_ PBOOL bRebootRequired
-                                                         );
-
-#ifdef _UNICODE
-#define UPDATEDRIVERFORPLUGANDPLAYDEVICES "UpdateDriverForPlugAndPlayDevicesW"
-#else
-#define UPDATEDRIVERFORPLUGANDPLAYDEVICES "UpdateDriverForPlugAndPlayDevicesA"
-#endif
-
-//
 // exit codes
-//
 #define EXIT_OK      (0)
 #define EXIT_REBOOT  (1)
 #define EXIT_FAIL    (2)
