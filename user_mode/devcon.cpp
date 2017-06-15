@@ -15,12 +15,6 @@ Abstract:
 
 #include "devcon.h"
 
-struct IdEntry {
-    LPCTSTR String;     // string looking for
-    LPCTSTR Wild;       // first wild character if any
-    BOOL    InstanceId;
-};
-
 __drv_allocatesMem(object)
 LPTSTR * GetMultiSzIndexArray(_In_ __drv_aliasesMem LPTSTR MultiSz)
 /*++
@@ -152,145 +146,7 @@ failed:
     return NULL;
 }
 
-BOOL WildCardMatch(_In_ LPCTSTR Item, _In_ const IdEntry & MatchEntry)
-/*++
-
-Routine Description:
-
-    Compare a single item against wildcard
-    I'm sure there's better ways of implementing this
-    Other than a command-line management tools
-    it's a bad idea to use wildcards as it implies
-    assumptions about the hardware/instance ID
-    eg, it might be tempting to enumerate root\* to
-    find all root devices, however there is a CfgMgr
-    API to query status and determine if a device is
-    root enumerated, which doesn't rely on implementation
-    details.
-
-Arguments:
-
-    Item - item to find match for eg a\abcd\c
-    MatchEntry - eg *\*bc*\*
-
-Return Value:
-
-    TRUE if any match, otherwise FALSE
-
---*/
-{
-    LPCTSTR scanItem;
-    LPCTSTR wildMark;
-    LPCTSTR nextWild;
-    size_t matchlen;
-
-    //
-    // before attempting anything else
-    // try and compare everything up to first wild
-    //
-    if(!MatchEntry.Wild) {
-        return _tcsicmp(Item,MatchEntry.String) ? FALSE : TRUE;
-    }
-    if(_tcsnicmp(Item,MatchEntry.String,MatchEntry.Wild-MatchEntry.String) != 0) {
-        return FALSE;
-    }
-    wildMark = MatchEntry.Wild;
-    scanItem = Item + (MatchEntry.Wild-MatchEntry.String);
-
-    for(;wildMark[0];) {
-        //
-        // if we get here, we're either at or past a wildcard
-        //
-        if(wildMark[0] == WILD_CHAR) {
-            //
-            // so skip wild chars
-            //
-            wildMark = CharNext(wildMark);
-            continue;
-        }
-        //
-        // find next wild-card
-        //
-        nextWild = _tcschr(wildMark,WILD_CHAR);
-        if(nextWild) {
-            //
-            // substring
-            //
-            matchlen = nextWild-wildMark;
-        } else {
-            //
-            // last portion of match
-            //
-            size_t scanlen = _tcslen(scanItem);
-            matchlen = _tcslen(wildMark);
-            if(scanlen < matchlen) {
-                return FALSE;
-            }
-            return _tcsicmp(scanItem+scanlen-matchlen,wildMark) ? FALSE : TRUE;
-        }
-        if(_istalpha(wildMark[0])) {
-            //
-            // scan for either lower or uppercase version of first character
-            //
-
-            //
-            // the code suppresses the warning 28193 for the calls to _totupper
-            // and _totlower.  This suppression is done because those functions
-            // have a check return annotation on them.  However, they don't return
-            // error codes and the check return annotation is really being used
-            // to indicate that the return value of the function should be looked
-            // at and/or assigned to a variable.  The check return annotation means
-            // the return value should always be checked in all code paths.
-            // We assign the return values to variables but the while loop does not
-            // examine both values in all code paths (e.g. when scanItem[0] == 0,
-            // neither u nor l will be examined) and it doesn't need to examine
-            // the values in all code paths.
-            //
-#pragma warning( suppress: 28193)
-            TCHAR u = _totupper(wildMark[0]);
-#pragma warning( suppress: 28193)
-            TCHAR l = _totlower(wildMark[0]);
-            while(scanItem[0] && scanItem[0]!=u && scanItem[0]!=l) {
-                scanItem = CharNext(scanItem);
-            }
-            if(!scanItem[0]) {
-                //
-                // ran out of string
-                //
-                return FALSE;
-            }
-        } else {
-            //
-            // scan for first character (no case)
-            //
-            scanItem = _tcschr(scanItem,wildMark[0]);
-            if(!scanItem) {
-                //
-                // ran out of string
-                //
-                return FALSE;
-            }
-        }
-        //
-        // try and match the sub-string at wildMark against scanItem
-        //
-        if(_tcsnicmp(scanItem,wildMark,matchlen)!=0) {
-            //
-            // nope, try again
-            //
-            scanItem = CharNext(scanItem);
-            continue;
-        }
-        //
-        // substring matched
-        //
-        scanItem += matchlen;
-        wildMark += matchlen;
-    }
-    return (wildMark[0] ? FALSE : TRUE);
-}
-
-BOOL WildCompareHwIds(_In_ PZPWSTR Array, _In_ const IdEntry & MatchEntry)
+BOOL AnyMatch(_In_ PZPWSTR Array, _In_ LPCTSTR MatchEntry)
 /*++
 
 Routine Description:
@@ -311,7 +167,7 @@ Return Value:
 {
     if(Array) {
         while(Array[0]) {
-            if(WildCardMatch(Array[0],MatchEntry)) {
+            if(_tcsicmp(Array[0], MatchEntry) == 0) {
                 return TRUE;
             }
             Array++;
@@ -325,17 +181,14 @@ int EnumerateDevices(_In_ DWORD Flags, LPCTSTR hwid, _In_ CallbackFunc Callback,
 
 Routine Description:
 
-    Generic enumerator for devices that will be passed the following arguments:
-    <id> [<id>...]
-    =<class> [<id>...]
-    where <id> can either be @instance-id, or hardware-id and may contain wildcards
-    <class> is a class name
+    Enumerator for devices that will be passed the following arguments:
+    <id>
+    where <id> is a hardware-id
 
 Arguments:
 
-    Machine  - name of machine to enumerate
     Flags    - extra enumeration flags (eg DIGCF_PRESENT)
-    argc/argv - remaining arguments on command line
+    hwid -     hwid to find
     Callback - function to call for each hit
     Context  - data to pass function for each hit
 
@@ -346,17 +199,12 @@ Return Value:
 --*/
 {
     HDEVINFO devs = INVALID_HANDLE_VALUE;
-    IdEntry templ;
     int failcode = EXIT_FAIL;
     int retcode;
     DWORD devIndex;
     SP_DEVINFO_DATA devInfo;
     SP_DEVINFO_LIST_DETAIL_DATA devInfoListDetail;
     BOOL match;
-
-    templ.InstanceId = FALSE;
-    templ.Wild = NULL;
-    templ.String = hwid;
 
     //
     // add all id's to list
@@ -397,8 +245,8 @@ Return Value:
         hwIds = GetDevMultiSz(devs,&devInfo,SPDRP_HARDWAREID);
         compatIds = GetDevMultiSz(devs,&devInfo,SPDRP_COMPATIBLEIDS);
 
-        if(WildCompareHwIds(hwIds,templ) ||
-            WildCompareHwIds(compatIds,templ)) {
+        if(AnyMatch(hwIds,hwid) ||
+           AnyMatch(compatIds,hwid)) {
             match = TRUE;
         }
         DelMultiSz(hwIds);
@@ -452,7 +300,9 @@ _tmain(_In_ int argc, _In_reads_(argc) PWSTR* argv)
    printf("install\n");
    if ((retval = cmdInstall(inf, hwid)) != EXIT_OK) goto fail;
    printf("Installed!\n");
-   getchar();
+
+   getchar(); //do stuff here
+
    printf("remove\n");
    if ((retval = cmdRemove(hwid)) != EXIT_OK) goto fail;
 

@@ -30,8 +30,6 @@ Abstract:
 
 typedef int (*CallbackFunc)(_In_ HDEVINFO Devs, _In_ PSP_DEVINFO_DATA DevInfo, _In_ DWORD Index, _In_ LPVOID Context);
 
-#define WILD_CHAR              TEXT('*') // wild character
-
 # define Stringify(s) #s
 # define FormatToStream(file, fmt, ...) fprintf(file, "%s\n", Stringify(fmt))
 
