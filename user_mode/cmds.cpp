@@ -21,66 +21,7 @@ struct GenericContext {
     BOOL  reboot;
 };
 
-int cmdHelp(_In_ int argc, _In_reads_(argc) PTSTR argv[])
-/*++
-
-Routine Description:
-
-    HELP command
-    allow HELP or HELP <command>
-
-Arguments:
-
-    argc/argv - remaining parameters
-
-Return Value:
-
-    EXIT_xxxx
-
---*/
-{
-    DWORD helptext = 0;
-    int dispIndex;
-    LPCTSTR cmd = NULL;
-    BOOL unknown = FALSE;
-
-    if(argc) {
-        //
-        // user passed in a command for help on... long help
-        //
-        for(dispIndex = 0;DispatchTable[dispIndex].cmd;dispIndex++) {
-            if(_tcsicmp(argv[0],DispatchTable[dispIndex].cmd)==0) {
-                cmd = DispatchTable[dispIndex].cmd;
-                break;
-            }
-        }
-        if(!cmd) {
-            unknown = TRUE;
-            cmd = argv[0];
-        }
-    }
-
-    if(helptext) {
-        //
-        // long help
-        //
-        FormatToStream(stdout,helptext,BaseName,cmd);
-    } else {
-        //
-        // help help
-        //
-        FormatToStream(stdout,unknown ? MSG_HELP_OTHER : MSG_HELP_LONG,BaseName,cmd);
-        //
-        // enumerate through each command and display short help for each
-        //
-        _fputts(TEXT("\n"), stdout);
-        for(dispIndex = 0;DispatchTable[dispIndex].cmd;dispIndex++) {
-        }
-    }
-    return EXIT_OK;
-}
-
-int cmdUpdate(_In_ int argc, _In_reads_(argc) PTSTR argv[])
+int cmdUpdate(LPCTSTR inf, LPCTSTR hwid)
 /*++
 
 Routine Description:
@@ -101,27 +42,10 @@ Return Value:
     int failcode = EXIT_FAIL;
     UpdateDriverForPlugAndPlayDevicesProto UpdateFn;
     BOOL reboot = FALSE;
-    LPCTSTR hwid = NULL;
-    LPCTSTR inf = NULL;
     DWORD flags = 0;
     DWORD res;
     TCHAR InfPath[MAX_PATH];
 
-    if(argc<2) {
-        //
-        // at least HWID required
-        //
-        return EXIT_USAGE;
-    }
-    inf = argv[0];
-    if(!inf[0]) {
-        return EXIT_USAGE;
-    }
-
-    hwid = argv[1];
-    if(!hwid[0]) {
-        return EXIT_USAGE;
-    }
     //
     // Inf must be a full pathname
     //
@@ -173,7 +97,7 @@ final:
     return failcode;
 }
 
-int cmdInstall(_In_ int argc, _In_reads_(argc) PTSTR argv[])
+int cmdInstall(LPCTSTR inf, LPCTSTR hwid)
 /*++
 
 Routine Description:
@@ -198,24 +122,6 @@ Return Value:
     TCHAR hwIdList[LINE_LEN+4];
     TCHAR InfPath[MAX_PATH];
     int failcode = EXIT_FAIL;
-    LPCTSTR hwid = NULL;
-    LPCTSTR inf = NULL;
-
-    if(argc<2) {
-        //
-        // at least HWID required
-        //
-        return EXIT_USAGE;
-    }
-    inf = argv[0];
-    if(!inf[0]) {
-        return EXIT_USAGE;
-    }
-
-    hwid = argv[1];
-    if(!hwid[0]) {
-        return EXIT_USAGE;
-    }
 
     //
     // Inf must be a full pathname
@@ -295,7 +201,7 @@ Return Value:
     //
     // update the driver for the device we just created
     //
-    failcode = cmdUpdate(argc,argv);
+    failcode = cmdUpdate(inf, hwid);
 
 final:
 
@@ -384,7 +290,7 @@ Return Value:
     return EXIT_OK;
 }
 
-int cmdRemove(_In_ int argc, _In_reads_(argc) PTSTR argv[])
+int cmdRemove(LPCTSTR hwid)
 /*++
 
 Routine Description:
@@ -406,16 +312,11 @@ Return Value:
     GenericContext context;
     int failcode = EXIT_FAIL;
 
-    if(!argc) {
-        //
-        // arguments required
-        //
-        return EXIT_USAGE;
-    }
-
     context.reboot = FALSE;
     context.count = 0;
-    failcode = EnumerateDevices(DIGCF_PRESENT,argc,argv,RemoveCallback,&context);
+
+    PTSTR argv[1] = { const_cast<LPTSTR>(hwid) };
+    failcode = EnumerateDevices(DIGCF_PRESENT,1, argv,RemoveCallback,&context);
 
     if(failcode == EXIT_OK) {
 
@@ -430,10 +331,3 @@ Return Value:
     }
     return failcode;
 }
-
-DispatchEntry DispatchTable[] = {
-    { TEXT("install"),      cmdInstall,     },
-    { TEXT("remove"),       cmdRemove,      },
-    { TEXT("?"),            cmdHelp,        },
-    { NULL,NULL }
-};

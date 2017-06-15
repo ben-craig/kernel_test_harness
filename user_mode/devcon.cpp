@@ -432,7 +432,7 @@ Return Value:
     return FALSE;
 }
 
-int EnumerateDevices(_In_ DWORD Flags, _In_ int argc, _In_reads_(argc) PWSTR* argv, _In_ CallbackFunc Callback, _In_ LPVOID Context)
+int EnumerateDevices(_In_ DWORD Flags, _In_ int argc, _In_reads_(argc) PTSTR* argv, _In_ CallbackFunc Callback, _In_ LPVOID Context)
 /*++
 
 Routine Description:
@@ -640,46 +640,50 @@ int
 __cdecl
 _tmain(_In_ int argc, _In_reads_(argc) PWSTR* argv)
 {
-    LPCTSTR cmd;
-    int dispIndex;
-    int firstArg = 1;
-    int retval = EXIT_USAGE;
+   int retval = EXIT_USAGE;
+   LPCTSTR hwid = NULL;
+   LPCTSTR inf = NULL;
 
-    //cmdRemove
-    //cmdInstall
-    //cmdRemove
-    if((argc-firstArg) < 1) {
-        //
-        // after switches, must at least be command
-        //
-        printf("missing command\n");
-        return EXIT_USAGE;
-    }
-    cmd = argv[firstArg];
-    firstArg++;
-    for(dispIndex = 0;DispatchTable[dispIndex].cmd;dispIndex++) {
-        if ((_tcsicmp(cmd,DispatchTable[dispIndex].cmd) != 0) ||
-            (argc < firstArg)) {
-            continue;
-        }
-        retval = DispatchTable[dispIndex].func(argc-firstArg,argv+firstArg);
-        switch(retval) {
-            case EXIT_USAGE:
-                printf("bad usage\n");
-                break;
-            case EXIT_REBOOT:
-                printf("reboot needed\n");
-                break;
-            case EXIT_OK:
-                break;
-            default:
-                printf("unknown error\n");
-                break;
-        }
-        return retval;
-    }
-    printf("bad usage\n");
-    return EXIT_USAGE;
+   if (argc<3) {
+      printf("insufficient args\n");
+      return EXIT_USAGE;
+   }
+   inf = argv[1];
+   if (!inf[0]) {
+      printf("inf name required\n");
+      return EXIT_USAGE;
+   }
+
+   hwid = argv[2];
+   if (!hwid[0]) {
+      printf("hwid required\n");
+      return EXIT_USAGE;
+   }
+
+   printf("remove\n");
+   if ((retval = cmdRemove(hwid)) != EXIT_OK) goto fail;
+   printf("install\n");
+   if ((retval = cmdInstall(inf, hwid)) != EXIT_OK) goto fail;
+   printf("Installed!\n");
+   printf("remove\n");
+   if ((retval = cmdRemove(hwid)) != EXIT_OK) goto fail;
+
+fail:
+   switch (retval) {
+   case EXIT_USAGE:
+      printf("bad usage\n");
+      break;
+   case EXIT_REBOOT:
+      printf("reboot needed\n");
+      break;
+   case EXIT_OK:
+      break;
+   case EXIT_FAIL:
+      printf("fail\n");
+      break;
+   default:
+      printf("unknown error %d\n", retval);
+      break;
+   }
+   return retval;
 }
-
-
