@@ -315,8 +315,7 @@ Return Value:
     context.reboot = FALSE;
     context.count = 0;
 
-    PTSTR argv[1] = { const_cast<LPTSTR>(hwid) };
-    failcode = EnumerateDevices(DIGCF_PRESENT,1, argv,RemoveCallback,&context);
+    failcode = EnumerateDevices(DIGCF_PRESENT,hwid,RemoveCallback,&context);
 
     if(failcode == EXIT_OK) {
 

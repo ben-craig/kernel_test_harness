@@ -432,7 +432,7 @@ Return Value:
     return FALSE;
 }
 
-int EnumerateDevices(_In_ DWORD Flags, _In_ int argc, _In_reads_(argc) PTSTR* argv, _In_ CallbackFunc Callback, _In_ LPVOID Context)
+int EnumerateDevices(_In_ DWORD Flags, LPCTSTR hwid, _In_ CallbackFunc Callback, _In_ LPVOID Context)
 /*++
 
 Routine Description:
@@ -458,55 +458,17 @@ Return Value:
 --*/
 {
     HDEVINFO devs = INVALID_HANDLE_VALUE;
-    IdEntry * templ = NULL;
+    IdEntry templ;
     int failcode = EXIT_FAIL;
     int retcode;
-    int argIndex;
     DWORD devIndex;
     SP_DEVINFO_DATA devInfo;
     SP_DEVINFO_LIST_DETAIL_DATA devInfoListDetail;
     BOOL doSearch = FALSE;
     BOOL match;
-    BOOL all = FALSE;
     GUID cls;
     DWORD numClass = 0;
     int skip = 0;
-
-    if(!argc) {
-        return EXIT_USAGE;
-    }
-
-    templ = new IdEntry[argc];
-    if(!templ) {
-        goto final;
-    }
-
-    //
-    // determine if a class is specified
-    //
-    if(argc>skip && argv[skip][0]==CLASS_PREFIX_CHAR && argv[skip][1]) {
-        if(!SetupDiClassGuidsFromNameEx(argv[skip]+1,&cls,1,&numClass,NULL,NULL) &&
-            GetLastError() != ERROR_INSUFFICIENT_BUFFER) {
-            goto final;
-        }
-        if(!numClass) {
-            failcode = EXIT_OK;
-            goto final;
-        }
-        skip++;
-    }
-    if(argc>skip && argv[skip][0]==WILD_CHAR && !argv[skip][1]) {
-        //
-        // catch convinient case of specifying a single argument '*'
-        //
-        all = TRUE;
-        skip++;
-    } else if(argc<=skip) {
-        //
-        // at least one parameter, but no <id>'s
-        //
-        all = TRUE;
-    }
 
     //
     // determine if any instance id's were specified
@@ -515,16 +477,14 @@ Return Value:
     // we'll mark it as not doSearch
     // but will go ahead and add them all
     //
-    for(argIndex=skip;argIndex<argc;argIndex++) {
-        templ[argIndex] = GetIdType(argv[argIndex]);
-        if(templ[argIndex].Wild || !templ[argIndex].InstanceId) {
-            //
-            // anything other than simple InstanceId's require a search
-            //
-            doSearch = TRUE;
-        }
+    templ = GetIdType(hwid);
+    if(templ.Wild || !templ.InstanceId) {
+        //
+        // anything other than simple InstanceId's require a search
+        //
+        doSearch = TRUE;
     }
-    if(doSearch || all) {
+    if(doSearch) {
         //
         // add all id's to list
         // if there's a class, filter on specified class
@@ -549,16 +509,14 @@ Return Value:
     if(devs == INVALID_HANDLE_VALUE) {
         goto final;
     }
-    for(argIndex=skip;argIndex<argc;argIndex++) {
-        //
-        // add explicit instances to list (even if enumerated all,
-        // this gets around DIGCF_PRESENT)
-        // do this even if wildcards appear to be detected since they
-        // might actually be part of the instance ID of a non-present device
-        //
-        if(templ[argIndex].InstanceId) {
-            SetupDiOpenDeviceInfo(devs,templ[argIndex].String,NULL,0,NULL);
-        }
+    //
+    // add explicit instances to list (even if enumerated all,
+    // this gets around DIGCF_PRESENT)
+    // do this even if wildcards appear to be detected since they
+    // might actually be part of the instance ID of a non-present device
+    //
+    if(templ.InstanceId) {
+        SetupDiOpenDeviceInfo(devs,templ.String,NULL,0,NULL);
     }
 
     devInfoListDetail.cbSize = sizeof(devInfoListDetail);
@@ -566,51 +524,43 @@ Return Value:
         goto final;
     }
 
-    //
-    // now enumerate them
-    //
-    if(all) {
-        doSearch = FALSE;
-    }
-
     devInfo.cbSize = sizeof(devInfo);
     for(devIndex=0;SetupDiEnumDeviceInfo(devs,devIndex,&devInfo);devIndex++) {
 
         if(doSearch) {
-            for(argIndex=skip,match=FALSE;(argIndex<argc) && !match;argIndex++) {
-                TCHAR devID[MAX_DEVICE_ID_LEN];
-                LPTSTR *hwIds = NULL;
-                LPTSTR *compatIds = NULL;
-                //
-                // determine instance ID
-                //
-                if(CM_Get_Device_ID_Ex(devInfo.DevInst,devID,MAX_DEVICE_ID_LEN,0,devInfoListDetail.RemoteMachineHandle)!=CR_SUCCESS) {
-                    devID[0] = TEXT('\0');
-                }
-
-                if(templ[argIndex].InstanceId) {
-                    //
-                    // match on the instance ID
-                    //
-                    if(WildCardMatch(devID,templ[argIndex])) {
-                        match = TRUE;
-                    }
-                } else {
-                    //
-                    // determine hardware ID's
-                    // and search for matches
-                    //
-                    hwIds = GetDevMultiSz(devs,&devInfo,SPDRP_HARDWAREID);
-                    compatIds = GetDevMultiSz(devs,&devInfo,SPDRP_COMPATIBLEIDS);
-
-                    if(WildCompareHwIds(hwIds,templ[argIndex]) ||
-                        WildCompareHwIds(compatIds,templ[argIndex])) {
-                        match = TRUE;
-                    }
-                }
-                DelMultiSz(hwIds);
-                DelMultiSz(compatIds);
+            match = FALSE;
+            TCHAR devID[MAX_DEVICE_ID_LEN];
+            LPTSTR *hwIds = NULL;
+            LPTSTR *compatIds = NULL;
+            //
+            // determine instance ID
+            //
+            if(CM_Get_Device_ID_Ex(devInfo.DevInst,devID,MAX_DEVICE_ID_LEN,0,devInfoListDetail.RemoteMachineHandle)!=CR_SUCCESS) {
+                devID[0] = TEXT('\0');
             }
+
+            if(templ.InstanceId) {
+                //
+                // match on the instance ID
+                //
+                if(WildCardMatch(devID,templ)) {
+                    match = TRUE;
+                }
+            } else {
+                //
+                // determine hardware ID's
+                // and search for matches
+                //
+                hwIds = GetDevMultiSz(devs,&devInfo,SPDRP_HARDWAREID);
+                compatIds = GetDevMultiSz(devs,&devInfo,SPDRP_COMPATIBLEIDS);
+
+                if(WildCompareHwIds(hwIds,templ) ||
+                    WildCompareHwIds(compatIds,templ)) {
+                    match = TRUE;
+                }
+            }
+            DelMultiSz(hwIds);
+            DelMultiSz(compatIds);
         } else {
             match = TRUE;
         }
@@ -626,9 +576,6 @@ Return Value:
     failcode = EXIT_OK;
 
 final:
-    if(templ) {
-        delete [] templ;
-    }
     if(devs != INVALID_HANDLE_VALUE) {
         SetupDiDestroyDeviceInfoList(devs);
     }
@@ -665,6 +612,7 @@ _tmain(_In_ int argc, _In_reads_(argc) PWSTR* argv)
    printf("install\n");
    if ((retval = cmdInstall(inf, hwid)) != EXIT_OK) goto fail;
    printf("Installed!\n");
+   getchar();
    printf("remove\n");
    if ((retval = cmdRemove(hwid)) != EXIT_OK) goto fail;
 

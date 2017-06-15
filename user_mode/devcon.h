@@ -39,7 +39,7 @@ typedef int (*CallbackFunc)(_In_ HDEVINFO Devs, _In_ PSP_DEVINFO_DATA DevInfo, _
 # define Stringify(s) #s
 # define FormatToStream(file, fmt, ...) fprintf(file, "%s\n", Stringify(fmt))
 
-int EnumerateDevices(_In_ DWORD Flags, _In_ int argc, _In_reads_(argc) PTSTR* argv, _In_ CallbackFunc Callback, _In_ LPVOID Context);
+int EnumerateDevices(_In_ DWORD Flags,LPCTSTR hwid, _In_ CallbackFunc Callback, _In_ LPVOID Context);
 __drv_allocatesMem(object) LPTSTR * GetDevMultiSz(_In_ HDEVINFO Devs, _In_ PSP_DEVINFO_DATA DevInfo, _In_ DWORD Prop);
 __drv_allocatesMem(object) LPTSTR * GetMultiSzIndexArray(_In_ __drv_aliasesMem LPTSTR MultiSz);
 void DelMultiSz(_In_opt_ __drv_freesMem(object) PZPWSTR Array);
