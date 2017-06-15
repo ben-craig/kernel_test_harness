@@ -21,7 +21,7 @@ struct GenericContext {
     BOOL  reboot;
 };
 
-int cmdHelp(_In_opt_ LPCTSTR Machine, _In_ DWORD Flags, _In_ int argc, _In_reads_(argc) PTSTR argv[])
+int cmdHelp(_In_ int argc, _In_reads_(argc) PTSTR argv[])
 /*++
 
 Routine Description:
@@ -31,7 +31,6 @@ Routine Description:
 
 Arguments:
 
-    Machine   - if non-NULL, remote machine (ignored)
     argc/argv - remaining parameters
 
 Return Value:
@@ -44,9 +43,6 @@ Return Value:
     int dispIndex;
     LPCTSTR cmd = NULL;
     BOOL unknown = FALSE;
-
-    UNREFERENCED_PARAMETER(Machine);
-    UNREFERENCED_PARAMETER(Flags);
 
     if(argc) {
         //
@@ -84,7 +80,7 @@ Return Value:
     return EXIT_OK;
 }
 
-int cmdUpdate(_In_opt_ LPCTSTR Machine, _In_ DWORD Flags, _In_ int argc, _In_reads_(argc) PTSTR argv[])
+int cmdUpdate(_In_ int argc, _In_reads_(argc) PTSTR argv[])
 /*++
 
 Routine Description:
@@ -93,7 +89,6 @@ Routine Description:
 
 Arguments:
 
-    Machine   - machine name, must be NULL
     argc/argv - remaining parameters
 
 Return Value:
@@ -112,14 +107,6 @@ Return Value:
     DWORD res;
     TCHAR InfPath[MAX_PATH];
 
-    UNREFERENCED_PARAMETER(Flags);
-
-    if(Machine) {
-        //
-        // must be local machine
-        //
-        return EXIT_USAGE;
-    }
     if(argc<2) {
         //
         // at least HWID required
@@ -186,7 +173,7 @@ final:
     return failcode;
 }
 
-int cmdInstall(_In_opt_ LPCTSTR Machine, _In_ DWORD Flags, _In_ int argc, _In_reads_(argc) PTSTR argv[])
+int cmdInstall(_In_ int argc, _In_reads_(argc) PTSTR argv[])
 /*++
 
 Routine Description:
@@ -196,7 +183,6 @@ Routine Description:
 
 Arguments:
 
-    Machine   - machine name, must be NULL
     argc/argv - remaining parameters
 
 Return Value:
@@ -215,12 +201,6 @@ Return Value:
     LPCTSTR hwid = NULL;
     LPCTSTR inf = NULL;
 
-    if(Machine) {
-        //
-        // must be local machine
-        //
-        return EXIT_USAGE;
-    }
     if(argc<2) {
         //
         // at least HWID required
@@ -315,7 +295,7 @@ Return Value:
     //
     // update the driver for the device we just created
     //
-    failcode = cmdUpdate(Machine,Flags,argc,argv);
+    failcode = cmdUpdate(argc,argv);
 
 final:
 
@@ -404,7 +384,7 @@ Return Value:
     return EXIT_OK;
 }
 
-int cmdRemove(_In_opt_ LPCTSTR Machine, _In_ DWORD Flags, _In_ int argc, _In_reads_(argc) PTSTR argv[])
+int cmdRemove(_In_ int argc, _In_reads_(argc) PTSTR argv[])
 /*++
 
 Routine Description:
@@ -426,24 +406,16 @@ Return Value:
     GenericContext context;
     int failcode = EXIT_FAIL;
 
-    UNREFERENCED_PARAMETER(Flags);
-
     if(!argc) {
         //
         // arguments required
         //
         return EXIT_USAGE;
     }
-    if(Machine) {
-        //
-        // must be local machine as we need to involve class/co installers
-        //
-        return EXIT_USAGE;
-    }
 
     context.reboot = FALSE;
     context.count = 0;
-    failcode = EnumerateDevices(Machine,DIGCF_PRESENT,argc,argv,RemoveCallback,&context);
+    failcode = EnumerateDevices(DIGCF_PRESENT,argc,argv,RemoveCallback,&context);
 
     if(failcode == EXIT_OK) {
 

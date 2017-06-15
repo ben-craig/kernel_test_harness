@@ -432,7 +432,7 @@ Return Value:
     return FALSE;
 }
 
-int EnumerateDevices(_In_opt_ LPCTSTR Machine, _In_ DWORD Flags, _In_ int argc, _In_reads_(argc) PWSTR* argv, _In_ CallbackFunc Callback, _In_ LPVOID Context)
+int EnumerateDevices(_In_ DWORD Flags, _In_ int argc, _In_reads_(argc) PWSTR* argv, _In_ CallbackFunc Callback, _In_ LPVOID Context)
 /*++
 
 Routine Description:
@@ -485,7 +485,7 @@ Return Value:
     // determine if a class is specified
     //
     if(argc>skip && argv[skip][0]==CLASS_PREFIX_CHAR && argv[skip][1]) {
-        if(!SetupDiClassGuidsFromNameEx(argv[skip]+1,&cls,1,&numClass,Machine,NULL) &&
+        if(!SetupDiClassGuidsFromNameEx(argv[skip]+1,&cls,1,&numClass,NULL,NULL) &&
             GetLastError() != ERROR_INSUFFICIENT_BUFFER) {
             goto final;
         }
@@ -534,7 +534,7 @@ Return Value:
                                      NULL,
                                      (numClass ? 0 : DIGCF_ALLCLASSES) | Flags,
                                      NULL,
-                                     Machine,
+                                     NULL,
                                      NULL);
 
     } else {
@@ -543,7 +543,7 @@ Return Value:
         //
         devs = SetupDiCreateDeviceInfoListEx(numClass ? &cls : NULL,
                                              NULL,
-                                             Machine,
+                                             NULL,
                                              NULL);
     }
     if(devs == INVALID_HANDLE_VALUE) {
@@ -644,9 +644,10 @@ _tmain(_In_ int argc, _In_reads_(argc) PWSTR* argv)
     int dispIndex;
     int firstArg = 1;
     int retval = EXIT_USAGE;
-    BOOL autoReboot = FALSE;
-    DWORD flags = 0;
 
+    //cmdRemove
+    //cmdInstall
+    //cmdRemove
     if((argc-firstArg) < 1) {
         //
         // after switches, must at least be command
@@ -661,15 +662,13 @@ _tmain(_In_ int argc, _In_reads_(argc) PWSTR* argv)
             (argc < firstArg)) {
             continue;
         }
-        retval = DispatchTable[dispIndex].func(NULL,flags,argc-firstArg,argv+firstArg);
+        retval = DispatchTable[dispIndex].func(argc-firstArg,argv+firstArg);
         switch(retval) {
             case EXIT_USAGE:
                 printf("bad usage\n");
                 break;
             case EXIT_REBOOT:
-                if(autoReboot) {
-                    Reboot();
-                }
+                printf("reboot needed\n");
                 break;
             case EXIT_OK:
                 break;
