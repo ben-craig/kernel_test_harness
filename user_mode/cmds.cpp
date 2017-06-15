@@ -64,13 +64,9 @@ Return Value:
     inf = InfPath;
     flags |= INSTALLFLAG_FORCE;
 
-    FormatToStream(stdout,inf ? MSG_UPDATE_INF : MSG_UPDATE,hwid,inf);
-
     if(!UpdateDriverForPlugAndPlayDevices(NULL,hwid,inf,flags,&reboot)) {
         goto final;
     }
-
-    FormatToStream(stdout,MSG_UPDATE_OK);
 
     failcode = reboot ? EXIT_REBOOT : EXIT_OK;
 
@@ -179,7 +175,6 @@ Return Value:
         goto final;
     }
 
-    FormatToStream(stdout,MSG_INSTALL_UPDATE);
     //
     // update the driver for the device we just created
     //
@@ -302,11 +297,11 @@ Return Value:
     if(failcode == EXIT_OK) {
 
         if(!context.count) {
-            FormatToStream(stdout,MSG_REMOVE_TAIL_NONE);
+            printf("Removed none\n");
         } else if(!context.reboot) {
-           FormatToStream(stdout,MSG_REMOVE_TAIL,context.count);
+            printf("Removed %d\n", (int)context.count);
         } else {
-            FormatToStream(stdout,MSG_REMOVE_TAIL_REBOOT,context.count);
+            printf("Removed %d.  Please reboot.\n", (int)context.count);
             failcode = EXIT_REBOOT;
         }
     }
