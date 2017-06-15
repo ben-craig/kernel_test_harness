@@ -17,22 +17,7 @@ Abstract:
 
 __drv_allocatesMem(object)
 LPTSTR * GetMultiSzIndexArray(_In_ __drv_aliasesMem LPTSTR MultiSz)
-/*++
-
-Routine Description:
-
-    Get an index array pointing to the MultiSz passed in
-
-Arguments:
-
-    MultiSz - well formed multi-sz string
-
-Return Value:
-
-    array of strings. last entry+1 of array contains NULL
-    returns NULL on failure
-
---*/
+// Get an index array pointing to the MultiSz passed in
 {
     LPTSTR scan;
     LPTSTR * array;
@@ -58,21 +43,7 @@ Return Value:
 }
 
 void DelMultiSz(_In_opt_ __drv_freesMem(object) PZPWSTR Array)
-/*++
-
-Routine Description:
-
-    Deletes the string array allocated by GetDevMultiSz/GetRegMultiSz/GetMultiSzIndexArray
-
-Arguments:
-
-    Array - pointer returned by GetMultiSzIndexArray
-
-Return Value:
-
-    None
-
---*/
+// Deletes the string array allocated by GetDevMultiSz/GetRegMultiSz/GetMultiSzIndexArray
 {
     if(Array) {
         Array--;
@@ -85,25 +56,7 @@ Return Value:
 
 __drv_allocatesMem(object)
 LPTSTR * GetDevMultiSz(_In_ HDEVINFO Devs, _In_ PSP_DEVINFO_DATA DevInfo, _In_ DWORD Prop)
-/*++
-
-Routine Description:
-
-    Get a multi-sz device property
-    and return as an array of strings
-
-Arguments:
-
-    Devs    - HDEVINFO containing DevInfo
-    DevInfo - Specific device
-    Prop    - SPDRP_HARDWAREID or SPDRP_COMPATIBLEIDS
-
-Return Value:
-
-    array of strings. last entry+1 of array contains NULL
-    returns NULL on failure
-
---*/
+// Get a multi-sz device property and return as an array of strings
 {
     LPTSTR buffer;
     DWORD size;
@@ -147,23 +100,7 @@ failed:
 }
 
 BOOL AnyMatch(_In_ PZPWSTR Array, _In_ LPCTSTR MatchEntry)
-/*++
-
-Routine Description:
-
-    Compares all strings in Array against Id
-    Use WildCardMatch to do real compare
-
-Arguments:
-
-    Array - pointer returned by GetDevMultiSz
-    MatchEntry - string to compare against
-
-Return Value:
-
-    TRUE if any match, otherwise FALSE
-
---*/
+// Compares all strings in Array against Id
 {
     if(Array) {
         while(Array[0]) {
@@ -177,25 +114,10 @@ Return Value:
 }
 
 int EnumerateDevices(_In_ DWORD Flags, LPCTSTR hwid, _In_ CallbackFunc Callback, _In_ LPVOID Context)
-/*++
-
-Routine Description:
-
+/*
     Enumerator for devices that will be passed the following arguments:
     <id>
     where <id> is a hardware-id
-
-Arguments:
-
-    Flags    - extra enumeration flags (eg DIGCF_PRESENT)
-    hwid -     hwid to find
-    Callback - function to call for each hit
-    Context  - data to pass function for each hit
-
-Return Value:
-
-    EXIT_xxxx
-
 --*/
 {
     HDEVINFO devs = INVALID_HANDLE_VALUE;
@@ -253,7 +175,7 @@ Return Value:
         DelMultiSz(compatIds);
 
         if(match) {
-            retcode = Callback(devs,&devInfo,devIndex,Context);
+            retcode = Callback(devs,&devInfo,Context);
             if(retcode) {
                 failcode = retcode;
                 goto final;
@@ -295,26 +217,23 @@ _tmain(_In_ int argc, _In_reads_(argc) PWSTR* argv)
       return EXIT_USAGE;
    }
 
-   printf("remove\n");
    if ((retval = cmdRemove(hwid)) != EXIT_OK) goto fail;
-   printf("install\n");
    if ((retval = cmdInstall(inf, hwid)) != EXIT_OK) goto fail;
-   printf("Installed!\n");
 
+   printf("Installed!\n");
    getchar(); //do stuff here
 
-   printf("remove\n");
    if ((retval = cmdRemove(hwid)) != EXIT_OK) goto fail;
 
 fail:
    switch (retval) {
+   case EXIT_OK:
+      break;
    case EXIT_USAGE:
       printf("bad usage\n");
       break;
    case EXIT_REBOOT:
       printf("reboot needed\n");
-      break;
-   case EXIT_OK:
       break;
    case EXIT_FAIL:
       printf("fail\n");
