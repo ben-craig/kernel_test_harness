@@ -432,7 +432,7 @@ Return Value:
     return FALSE;
 }
 
-int EnumerateDevices(_In_ LPCTSTR BaseName, _In_opt_ LPCTSTR Machine, _In_ DWORD Flags, _In_ int argc, _In_reads_(argc) PWSTR* argv, _In_ CallbackFunc Callback, _In_ LPVOID Context)
+int EnumerateDevices(_In_opt_ LPCTSTR Machine, _In_ DWORD Flags, _In_ int argc, _In_reads_(argc) PWSTR* argv, _In_ CallbackFunc Callback, _In_ LPVOID Context)
 /*++
 
 Routine Description:
@@ -445,7 +445,6 @@ Routine Description:
 
 Arguments:
 
-    BaseName - name of executable
     Machine  - name of machine to enumerate
     Flags    - extra enumeration flags (eg DIGCF_PRESENT)
     argc/argv - remaining arguments on command line
@@ -472,8 +471,6 @@ Return Value:
     GUID cls;
     DWORD numClass = 0;
     int skip = 0;
-
-    UNREFERENCED_PARAMETER(BaseName);
 
     if(!argc) {
         return EXIT_USAGE;
@@ -642,119 +639,27 @@ final:
 int
 __cdecl
 _tmain(_In_ int argc, _In_reads_(argc) PWSTR* argv)
-/*++
-
-Routine Description:
-
-    Main entry point
-    interpret -m:<machine>
-    and hand off execution to command
-
-Arguments:
-
-    argc/argv - parameters passed to executable
-
-Return Value:
-
-    EXIT_xxxx
-
---*/
 {
     LPCTSTR cmd;
-    LPCTSTR baseName;
-    LPCTSTR machine = NULL;
     int dispIndex;
     int firstArg = 1;
     int retval = EXIT_USAGE;
     BOOL autoReboot = FALSE;
     DWORD flags = 0;
 
-    //
-    // syntax:
-    //
-    // [options] [-]command [<arg> [<arg>]]
-    //
-    // options:
-    // -m:<machine>  - remote
-    // -r            - auto reboot
-    // -f            - force operation
-    // -u            - unicode output
-    //
-
-    baseName = _tcsrchr(argv[0],TEXT('\\'));
-    if(!baseName) {
-        baseName = argv[0];
-    } else {
-        baseName = CharNext(baseName);
-    }
-    while((argc > firstArg) && ((argv[firstArg][0] == TEXT('-')) || (argv[firstArg][0] == TEXT('/')))) {
-        if((argv[firstArg][1]==TEXT('m')) || (argv[firstArg][1]==TEXT('M'))) {
-            if((argv[firstArg][2]!=TEXT(':')) || (argv[firstArg][3]==TEXT('\0'))) {
-                //
-                // don't recognize this switch
-                //
-                break;
-            }
-            machine = argv[firstArg]+3;
-        } else if((argv[firstArg][1]==TEXT('r')) || (argv[firstArg][1]==TEXT('R'))) {
-            if((argv[firstArg][2]!=TEXT('\0')) ) {
-                //
-                // don't recognize this switch
-                //
-                break;
-            } else {
-                autoReboot = TRUE;
-            }
-        } else if((argv[firstArg][1]==TEXT('f')) || (argv[firstArg][1]==TEXT('F'))) {
-            if((argv[firstArg][2]!=TEXT('\0')) ) {
-                //
-                // don't recognize this switch
-                //
-                break;
-            } else {
-                flags |= DEVCON_FLAG_FORCE;
-            }
-        } else if((argv[firstArg][1]==TEXT('u')) || (argv[firstArg][1]==TEXT('U'))) {
-            if((argv[firstArg][2]!=TEXT('\0')) ) {
-                //
-                // don't recognize this switch
-                //
-                break;
-            } else {
-#ifdef UNICODE
-                _setmode(_fileno(stdout), _O_WTEXT);
-                _setmode(_fileno(stderr), _O_WTEXT);
-#endif
-            }
-        } else {
-            //
-            // don't recognize this switch
-            //
-            break;
-        }
-        firstArg++;
-    }
-
     if((argc-firstArg) < 1) {
         //
         // after switches, must at least be command
         //
-        printf("bad usage\n");
+        printf("missing command\n");
         return EXIT_USAGE;
     }
     cmd = argv[firstArg];
-    if((cmd[0]==TEXT('-')) || (cmd[0]==TEXT('/'))) {
-        //
-        // command may begin '-' or '/'
-        // eg, people might do devcon -help
-        //
-        cmd = CharNext(cmd);
-    }
     firstArg++;
     for(dispIndex = 0;DispatchTable[dispIndex].cmd;dispIndex++) {
         if ((_tcsicmp(cmd,DispatchTable[dispIndex].cmd) == 0) &&
             (argc >= firstArg)) {
-            retval = DispatchTable[dispIndex].func(baseName,machine,flags,argc-firstArg,argv+firstArg);
+            retval = DispatchTable[dispIndex].func(NULL,flags,argc-firstArg,argv+firstArg);
             switch(retval) {
                 case EXIT_USAGE:
                     printf("bad usage\n");

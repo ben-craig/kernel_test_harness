@@ -21,7 +21,7 @@ struct GenericContext {
     BOOL  reboot;
 };
 
-int cmdHelp(_In_ LPCTSTR BaseName, _In_opt_ LPCTSTR Machine, _In_ DWORD Flags, _In_ int argc, _In_reads_(argc) PTSTR argv[])
+int cmdHelp(_In_opt_ LPCTSTR Machine, _In_ DWORD Flags, _In_ int argc, _In_reads_(argc) PTSTR argv[])
 /*++
 
 Routine Description:
@@ -31,7 +31,6 @@ Routine Description:
 
 Arguments:
 
-    BaseName  - name of executable
     Machine   - if non-NULL, remote machine (ignored)
     argc/argv - remaining parameters
 
@@ -85,7 +84,7 @@ Return Value:
     return EXIT_OK;
 }
 
-int cmdUpdate(_In_ LPCTSTR BaseName, _In_opt_ LPCTSTR Machine, _In_ DWORD Flags, _In_ int argc, _In_reads_(argc) PTSTR argv[])
+int cmdUpdate(_In_opt_ LPCTSTR Machine, _In_ DWORD Flags, _In_ int argc, _In_reads_(argc) PTSTR argv[])
 /*++
 
 Routine Description:
@@ -94,7 +93,6 @@ Routine Description:
 
 Arguments:
 
-    BaseName  - name of executable
     Machine   - machine name, must be NULL
     argc/argv - remaining parameters
 
@@ -114,7 +112,6 @@ Return Value:
     DWORD res;
     TCHAR InfPath[MAX_PATH];
 
-    UNREFERENCED_PARAMETER(BaseName);
     UNREFERENCED_PARAMETER(Flags);
 
     if(Machine) {
@@ -189,7 +186,7 @@ final:
     return failcode;
 }
 
-int cmdInstall(_In_ LPCTSTR BaseName, _In_opt_ LPCTSTR Machine, _In_ DWORD Flags, _In_ int argc, _In_reads_(argc) PTSTR argv[])
+int cmdInstall(_In_opt_ LPCTSTR Machine, _In_ DWORD Flags, _In_ int argc, _In_reads_(argc) PTSTR argv[])
 /*++
 
 Routine Description:
@@ -199,7 +196,6 @@ Routine Description:
 
 Arguments:
 
-    BaseName  - name of executable
     Machine   - machine name, must be NULL
     argc/argv - remaining parameters
 
@@ -319,7 +315,7 @@ Return Value:
     //
     // update the driver for the device we just created
     //
-    failcode = cmdUpdate(BaseName,Machine,Flags,argc,argv);
+    failcode = cmdUpdate(Machine,Flags,argc,argv);
 
 final:
 
@@ -408,7 +404,7 @@ Return Value:
     return EXIT_OK;
 }
 
-int cmdRemove(_In_ LPCTSTR BaseName, _In_opt_ LPCTSTR Machine, _In_ DWORD Flags, _In_ int argc, _In_reads_(argc) PTSTR argv[])
+int cmdRemove(_In_opt_ LPCTSTR Machine, _In_ DWORD Flags, _In_ int argc, _In_reads_(argc) PTSTR argv[])
 /*++
 
 Routine Description:
@@ -418,7 +414,6 @@ Routine Description:
 
 Arguments:
 
-    BaseName  - name of executable
     Machine   - machine name, must be NULL
     argc/argv - remaining parameters
 
@@ -448,7 +443,7 @@ Return Value:
 
     context.reboot = FALSE;
     context.count = 0;
-    failcode = EnumerateDevices(BaseName,Machine,DIGCF_PRESENT,argc,argv,RemoveCallback,&context);
+    failcode = EnumerateDevices(Machine,DIGCF_PRESENT,argc,argv,RemoveCallback,&context);
 
     if(failcode == EXIT_OK) {
 

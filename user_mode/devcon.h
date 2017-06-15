@@ -28,7 +28,7 @@ Abstract:
 #include <io.h>
 #include <fcntl.h>
 
-typedef int (*DispatchFunc)(_In_ LPCTSTR BaseName, _In_opt_ LPCTSTR Machine, _In_ DWORD Flags, _In_ int argc, _In_ LPTSTR argv[]);
+typedef int (*DispatchFunc)(_In_opt_ LPCTSTR Machine, _In_ DWORD Flags, _In_ int argc, _In_ LPTSTR argv[]);
 typedef int (*CallbackFunc)(_In_ HDEVINFO Devs, _In_ PSP_DEVINFO_DATA DevInfo, _In_ DWORD Index, _In_ LPVOID Context);
 
 typedef struct {
@@ -52,7 +52,7 @@ extern DispatchEntry DispatchTable[];
 # define Stringify(s) #s
 # define FormatToStream(file, fmt, ...) fprintf(file, "%s", Stringify(fmt))
 
-int EnumerateDevices(_In_ LPCTSTR BaseName, _In_opt_ LPCTSTR Machine, _In_ DWORD Flags, _In_ int argc, _In_reads_(argc) PWSTR* argv, _In_ CallbackFunc Callback, _In_ LPVOID Context);
+int EnumerateDevices(_In_opt_ LPCTSTR Machine, _In_ DWORD Flags, _In_ int argc, _In_reads_(argc) PWSTR* argv, _In_ CallbackFunc Callback, _In_ LPVOID Context);
 __drv_allocatesMem(object) LPTSTR * GetDevMultiSz(_In_ HDEVINFO Devs, _In_ PSP_DEVINFO_DATA DevInfo, _In_ DWORD Prop);
 __drv_allocatesMem(object) LPTSTR * GetMultiSzIndexArray(_In_ __drv_aliasesMem LPTSTR MultiSz);
 void DelMultiSz(_In_opt_ __drv_freesMem(object) PZPWSTR Array);
