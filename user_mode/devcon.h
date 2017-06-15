@@ -30,12 +30,8 @@ Abstract:
 
 typedef int (*CallbackFunc)(_In_ HDEVINFO Devs, _In_ PSP_DEVINFO_DATA DevInfo, _In_ DWORD Index, _In_ LPVOID Context);
 
-#define INSTANCEID_PREFIX_CHAR TEXT('@') // character used to prefix instance ID's
-#define CLASS_PREFIX_CHAR      TEXT('=') // character used to prefix class name
 #define WILD_CHAR              TEXT('*') // wild character
-#define QUOTE_PREFIX_CHAR      TEXT('\'') // prefix character to ignore wild characters
 
-//void FormatToStream(_In_ FILE * stream, _In_ DWORD fmt,...);
 # define Stringify(s) #s
 # define FormatToStream(file, fmt, ...) fprintf(file, "%s\n", Stringify(fmt))
 

@@ -89,50 +89,6 @@ final:
 
 }
 
-IdEntry GetIdType(_In_ LPCTSTR Id)
-/*++
-
-Routine Description:
-
-    Determine if this is instance id or hardware id and if there's any wildcards
-    instance ID is prefixed by '@'
-    wildcards are '*'
-
-
-Arguments:
-
-    Id - ptr to string to check
-
-Return Value:
-
-    IdEntry
-
---*/
-{
-    IdEntry Entry;
-
-    Entry.InstanceId = FALSE;
-    Entry.Wild = NULL;
-    Entry.String = Id;
-
-    if(Entry.String[0] == INSTANCEID_PREFIX_CHAR) {
-        Entry.InstanceId = TRUE;
-        Entry.String = CharNext(Entry.String);
-    }
-    if(Entry.String[0] == QUOTE_PREFIX_CHAR) {
-        //
-        // prefix to treat rest of string literally
-        //
-        Entry.String = CharNext(Entry.String);
-    } else {
-        //
-        // see if any wild characters exist
-        //
-        Entry.Wild = _tcschr(Entry.String,WILD_CHAR);
-    }
-    return Entry;
-}
-
 __drv_allocatesMem(object)
 LPTSTR * GetMultiSzIndexArray(_In_ __drv_aliasesMem LPTSTR MultiSz)
 /*++
@@ -464,59 +420,26 @@ Return Value:
     DWORD devIndex;
     SP_DEVINFO_DATA devInfo;
     SP_DEVINFO_LIST_DETAIL_DATA devInfoListDetail;
-    BOOL doSearch = FALSE;
     BOOL match;
-    GUID cls;
-    DWORD numClass = 0;
-    int skip = 0;
+
+    templ.InstanceId = FALSE;
+    templ.Wild = NULL;
+    templ.String = hwid;
 
     //
-    // determine if any instance id's were specified
+    // add all id's to list
+    // if there's a class, filter on specified class
     //
-    // note, if =<class> was specified with no id's
-    // we'll mark it as not doSearch
-    // but will go ahead and add them all
-    //
-    templ = GetIdType(hwid);
-    if(templ.Wild || !templ.InstanceId) {
-        //
-        // anything other than simple InstanceId's require a search
-        //
-        doSearch = TRUE;
-    }
-    if(doSearch) {
-        //
-        // add all id's to list
-        // if there's a class, filter on specified class
-        //
-        devs = SetupDiGetClassDevsEx(numClass ? &cls : NULL,
-                                     NULL,
-                                     NULL,
-                                     (numClass ? 0 : DIGCF_ALLCLASSES) | Flags,
-                                     NULL,
-                                     NULL,
-                                     NULL);
+    devs = SetupDiGetClassDevsEx(NULL,
+                                 NULL,
+                                 NULL,
+                                 DIGCF_ALLCLASSES | Flags,
+                                 NULL,
+                                 NULL,
+                                 NULL);
 
-    } else {
-        //
-        // blank list, we'll add instance id's by hand
-        //
-        devs = SetupDiCreateDeviceInfoListEx(numClass ? &cls : NULL,
-                                             NULL,
-                                             NULL,
-                                             NULL);
-    }
     if(devs == INVALID_HANDLE_VALUE) {
         goto final;
-    }
-    //
-    // add explicit instances to list (even if enumerated all,
-    // this gets around DIGCF_PRESENT)
-    // do this even if wildcards appear to be detected since they
-    // might actually be part of the instance ID of a non-present device
-    //
-    if(templ.InstanceId) {
-        SetupDiOpenDeviceInfo(devs,templ.String,NULL,0,NULL);
     }
 
     devInfoListDetail.cbSize = sizeof(devInfoListDetail);
@@ -526,44 +449,29 @@ Return Value:
 
     devInfo.cbSize = sizeof(devInfo);
     for(devIndex=0;SetupDiEnumDeviceInfo(devs,devIndex,&devInfo);devIndex++) {
+        match = FALSE;
+        TCHAR devID[MAX_DEVICE_ID_LEN];
+        LPTSTR *hwIds = NULL;
+        LPTSTR *compatIds = NULL;
+        //
+        // determine instance ID
+        //
+        if(CM_Get_Device_ID_Ex(devInfo.DevInst,devID,MAX_DEVICE_ID_LEN,0,devInfoListDetail.RemoteMachineHandle)!=CR_SUCCESS) {
+            devID[0] = TEXT('\0');
+        }
 
-        if(doSearch) {
-            match = FALSE;
-            TCHAR devID[MAX_DEVICE_ID_LEN];
-            LPTSTR *hwIds = NULL;
-            LPTSTR *compatIds = NULL;
-            //
-            // determine instance ID
-            //
-            if(CM_Get_Device_ID_Ex(devInfo.DevInst,devID,MAX_DEVICE_ID_LEN,0,devInfoListDetail.RemoteMachineHandle)!=CR_SUCCESS) {
-                devID[0] = TEXT('\0');
-            }
+        // determine hardware ID's
+        // and search for matches
+        hwIds = GetDevMultiSz(devs,&devInfo,SPDRP_HARDWAREID);
+        compatIds = GetDevMultiSz(devs,&devInfo,SPDRP_COMPATIBLEIDS);
 
-            if(templ.InstanceId) {
-                //
-                // match on the instance ID
-                //
-                if(WildCardMatch(devID,templ)) {
-                    match = TRUE;
-                }
-            } else {
-                //
-                // determine hardware ID's
-                // and search for matches
-                //
-                hwIds = GetDevMultiSz(devs,&devInfo,SPDRP_HARDWAREID);
-                compatIds = GetDevMultiSz(devs,&devInfo,SPDRP_COMPATIBLEIDS);
-
-                if(WildCompareHwIds(hwIds,templ) ||
-                    WildCompareHwIds(compatIds,templ)) {
-                    match = TRUE;
-                }
-            }
-            DelMultiSz(hwIds);
-            DelMultiSz(compatIds);
-        } else {
+        if(WildCompareHwIds(hwIds,templ) ||
+            WildCompareHwIds(compatIds,templ)) {
             match = TRUE;
         }
+        DelMultiSz(hwIds);
+        DelMultiSz(compatIds);
+
         if(match) {
             retcode = Callback(devs,&devInfo,devIndex,Context);
             if(retcode) {
