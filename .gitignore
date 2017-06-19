@@ -3,3 +3,4 @@ x64/
 x86/
 user_mode/x64/
 user_mode/x86/
+kernel_mode/kernel_mode.vcxproj.user
