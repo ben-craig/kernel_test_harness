@@ -1,0 +1,50 @@
+[Version]
+Signature=$WINDOWS NT$
+Class=%kernel_mode_className%
+ClassGUID={4d36e97d-e325-11ce-bfc1-08002be10318}
+Provider=%libcxx%
+DriverVer=06/14/2017,1.0.0
+CatalogFile=kernel_mode.cat
+DriverPackageDisplayName=%kernel_mode_SvcDesc%
+
+[Manufacturer]
+%libcxx%=software_Model,NTx86,NTamd64
+
+[software_Model.NTx86]
+%dev0_dDesc%=dev0_Cfg, root\kernel_mode
+
+[software_Model.NTamd64]
+%dev0_dDesc%=dev0_Cfg, root\kernel_mode
+
+[dev0_Cfg]
+CopyFiles=kernel_mode_CopyFiles
+
+[dev0_Cfg.Services]
+AddService= kernel_mode, 0x00000002, kernel_mode_Service_Inst
+
+[kernel_mode_CopyFiles]
+kernel_mode.sys
+
+[SourceDisksFiles]
+kernel_mode.sys=1
+
+[SourceDisksNames]
+1=%installationMedia%
+
+[DestinationDirs]
+DefaultDestDir=12
+
+[kernel_mode_Service_Inst]
+DisplayName    = %kernel_mode_SvcDesc%
+ServiceType    = 1        ; SERVICE_KERNEL_DRIVER
+StartType      = 3        ; SERVICE_DEMAND_START
+ErrorControl   = 1        ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\kernel_mode.sys
+LoadOrderGroup = Base
+
+[Strings]
+libcxx                = "LLVM libc++"
+dev0_dDesc            = "Libc++ test device"
+kernel_mode_className = "System"
+kernel_mode_SvcDesc   = "Libc++ kernel test"
+installationMedia     = "Installation Media"

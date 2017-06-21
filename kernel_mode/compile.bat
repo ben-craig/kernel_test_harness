@@ -81,5 +81,10 @@ mkdir x64\Release
    x64\Release\toaster.obj ^
    x64\Release\Source.obj
 
-endlocal
+copy kernel_mode.inf x64\Release
+echo inf2cat
+"C:\Program Files (x86)\Windows Kits\10\bin\x86\inf2cat.exe" /drv:x64\Release /os:XP_X64,Server2003_X64,Vista_X64,Server2008_X64
+echo signtool
+"C:\Program Files (x86)\Windows Kits\10\bin\x86\signtool.exe" sign /f p:\perforce\build\nibuild\export\17.0\17.0.0f3\includes\NITestingCert.pfx /p foo x64\Release\kernel_mode.cat
 
+endlocal
