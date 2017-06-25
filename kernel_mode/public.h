@@ -1,6 +1,45 @@
-#pragma once
-//TODO: new guid
-// {404F8482-49C4-4BFA-A031-C2874DE7912F}
-DEFINE_GUID(GUID_DEVINTERFACE_TOASTER,
-	0x404f8482, 0x49c4, 0x4bfa, 0xa0, 0x31, 0xc2, 0x87, 0x4d, 0xe7, 0x91, 0x2f);
+/*++
 
+Copyright (c) Microsoft Corporation.  All rights reserved.
+
+    THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
+    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR
+    PURPOSE.
+
+
+Module Name:
+
+    PUBLIC.H
+
+Abstract:
+
+
+    Defines the IOCTL codes that will be used by this driver.  The IOCTL code
+    contains a command identifier, plus other information about the device,
+    the type of access with which the file must have been opened,
+    and the type of buffering.
+
+Environment:
+
+    Kernel mode only.
+
+--*/
+#pragma once
+
+//
+// Device type           -- in the "User Defined" range."
+//
+#define FILEIO_TYPE 40001
+//
+// The IOCTL function codes from 0x800 to 0xFFF are for customer use.
+//
+#define IOCTL_NONPNP_METHOD_BUFFERED \
+    CTL_CODE( FILEIO_TYPE, 0x800, METHOD_BUFFERED, FILE_ANY_ACCESS  )
+
+
+#define DRIVER_FUNC_INSTALL     0x01
+#define DRIVER_FUNC_REMOVE      0x02
+
+#define DRIVER_NAME       "LIBCXX"
+#define DEVICE_NAME       "\\\\.\\LIBCXX\\nonpnpsamp.log"

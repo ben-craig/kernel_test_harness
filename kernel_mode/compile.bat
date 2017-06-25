@@ -68,6 +68,7 @@ ntoskrnl.lib                                                                 ^
 hal.lib                                                                      ^
 wmilib.lib                                                                   ^
 WdfLdr.lib                                                                   ^
+wdmsec.lib                                                                   ^
 WdfDriverEntry.lib
 
 mkdir x64
