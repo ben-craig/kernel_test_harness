@@ -41,5 +41,5 @@ Environment:
 #define DRIVER_FUNC_INSTALL     0x01
 #define DRIVER_FUNC_REMOVE      0x02
 
-#define DRIVER_NAME       "LIBCXX"
-#define DEVICE_NAME       "\\\\.\\LIBCXX\\nonpnpsamp.log"
+#define DRIVER_NAME       "kernel_mode"
+#define DEVICE_NAME       "\\\\.\\kernel_mode\\nonpnpsamp.log"

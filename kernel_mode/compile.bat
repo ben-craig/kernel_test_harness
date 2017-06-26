@@ -54,7 +54,7 @@ set LINK_FLAGS=^
 /release                                                                     ^
 /nodefaultlib                                                                ^
 /safeseh:no                                                                  ^
-/entry:DriverEntry                                                           ^
+/entry:FxDriverEntry                                                           ^
 /subsystem:native                                                            ^
 /machine:x64                                                                 ^
 /incremental:no                                                              ^
@@ -63,13 +63,14 @@ set LINK_FLAGS=^
 /DEBUG                                                                       ^
 /LIBPATH:"C:\Program Files (x86)\Windows Kits\10\Lib\10.0.15063.0\km\x64"    ^
 /LIBPATH:"C:\Program Files (x86)\Windows Kits\10\lib\wdf\kmdf\x64\1.11"      ^
+WdfDriverEntry.lib                                                           ^
 BufferOverflowFastFailK.lib                                                  ^
 ntoskrnl.lib                                                                 ^
 hal.lib                                                                      ^
 wmilib.lib                                                                   ^
 WdfLdr.lib                                                                   ^
-wdmsec.lib                                                                   ^
-WdfDriverEntry.lib
+wdmsec.lib
+
 
 mkdir x64
 mkdir x64\Release
