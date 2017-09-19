@@ -285,8 +285,6 @@ Return Value:
     PCHAR               inBuf, outBuf; // pointer to Input and output buffer
     PCHAR               data = "This String is from Device Driver !!!";
     size_t              datalen = strlen(data)+1;//Length of data including null
-    PMDL                mdl = NULL;
-    PCHAR               buffer = NULL;
 
     UNREFERENCED_PARAMETER(DeviceObject);
 
