@@ -1,17 +1,18 @@
 @echo off
 setlocal
 set MY_VC_DIR=C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.12.25827
+set MY_VC_BIN_DIR=%MY_VC_DIR%\bin\Hostx64\x64
 set MY_DDK_VER=10.0.16299.0
 set MY_DDK_INCLUDE=C:\Program Files (x86)\Windows Kits\10\Include\%MY_DDK_VER%
 set MY_DDK_LIB=C:\Program Files (x86)\Windows Kits\10\Lib\%MY_DDK_VER%
 set MY_DDK_BIN=C:\Program Files (x86)\Windows Kits\10\bin\%MY_DDK_VER%
-set CC="%MY_VC_DIR%\bin\Hostx64\x64\cl.exe"
+set CC="%MY_VC_BIN_DIR%\cl.exe"
 
 
 set KCCFLAGS=^
 /nologo                                                                ^
 /c                                                                     ^
-/W3                                                                    ^
+/W4                                                                    ^
 /Zp8                                                                   ^
 /Zc:wchar_t                                                            ^
 /GS-                                                                   ^
@@ -40,11 +41,13 @@ set KCCFLAGS=^
 /D_WIN64                                                               ^
 /DPOOL_NX_OPTIN=1                                                      ^
 /DDEBUG                                                                ^
-/I"%MY_DDK_INCLUDE%\km\crt" ^
-/I"%MY_DDK_INCLUDE%\km"     ^
+/I"%MY_VC_DIR%\include"                                                ^
+/I"%MY_DDK_INCLUDE%\ucrt"                                              ^
+/I"%MY_DDK_INCLUDE%\km\crt"                                            ^
+/I"%MY_DDK_INCLUDE%\km"                                                ^
 /I"%MY_DDK_INCLUDE%\shared"
 
-set LINK_PROG="%MY_VC_DIR%\bin\HostX64\x64\link.exe"
+set LINK_PROG="%MY_VC_BIN_DIR%\link.exe"
 
 set KLINK_FLAGS=^
 /nologo                                                                      ^
@@ -63,24 +66,33 @@ set KLINK_FLAGS=^
 /OPT:NOICF                                                                   ^
 /DEBUGTYPE:cv,fixup                                                          ^
 /DEBUG                                                                       ^
-/LIBPATH:"%MY_DDK_LIB%\km\x64"    ^
+/LIBPATH:"%MY_DDK_LIB%\km\x64"                                               ^
 BufferOverflowFastFailK.lib                                                  ^
 ntoskrnl.lib                                                                 ^
 hal.lib                                                                      ^
-wmilib.lib
+wmilib.lib                                                                   ^
+Ntstrsafe.lib
 
 
 mkdir x64
 mkdir x64\Release
 
 %CC% %KCCFLAGS% /Fox64\Release\sioctl.obj /Fdx64\Release\sioctl.pdb sys\sioctl.c
+%CC% %KCCFLAGS% /Fox64\Release\dummy.obj /Fdx64\Release\dummy.pdb sys\dummy.cpp
 
 %LINK_PROG% %KLINK_FLAGS% ^
    /PDB:x64\Release\sioctl.pdb /OUT:x64\Release\sioctl.sys ^
-   x64\Release\sioctl.obj
+   x64\Release\sioctl.obj ^
+   x64\Release\dummy.obj
 
 echo signtool
 "%MY_DDK_BIN%\x64\signtool.exe" sign /f C:\src\private_cert\NITestingCert.pfx /p foo x64\Release\sioctl.sys
+
+set DUMPBIN_PROG="%MY_VC_BIN_DIR%\dumpbin.exe"
+
+echo asm_dump
+%DUMPBIN_PROG% /disasm x64\Release\sioctl.sys > x64\Release\sioctl.asm
+findstr xmm x64\Release\sioctl.asm && goto :float_fail
 
 set UCCFLAGS=^
 /nologo                                                                ^
@@ -109,9 +121,9 @@ set UCCFLAGS=^
 /D_WIN64                                                               ^
 /DDEBUG                                                                ^
 /I"."                                                                  ^
-/I"%MY_DDK_INCLUDE%\ucrt"   ^
-/I"%MY_DDK_INCLUDE%\um"     ^
-/I"%MY_DDK_INCLUDE%\shared" ^
+/I"%MY_DDK_INCLUDE%\ucrt"                                              ^
+/I"%MY_DDK_INCLUDE%\um"                                                ^
+/I"%MY_DDK_INCLUDE%\shared"                                            ^
 /I"%MY_VC_DIR%\include"
 
 set ULINK_FLAGS=^
@@ -129,9 +141,9 @@ set ULINK_FLAGS=^
 /DYNAMICBASE                                                                 ^
 /DEBUGTYPE:cv,fixup                                                          ^
 /DEBUG                                                                       ^
-/LIBPATH:"%MY_DDK_LIB%\um\x64"    ^
-/LIBPATH:"%MY_DDK_LIB%\ucrt\x64"  ^
-/LIBPATH:"%MY_VC_DIR%\lib\x64" ^
+/LIBPATH:"%MY_DDK_LIB%\um\x64"                                               ^
+/LIBPATH:"%MY_DDK_LIB%\ucrt\x64"                                             ^
+/LIBPATH:"%MY_VC_DIR%\lib\x64"                                               ^
 msvcrt.lib                                                                   ^
 kernel32.lib                                                                 ^
 ucrt.lib                                                                     ^
@@ -145,4 +157,15 @@ AdvApi32.lib
    x64\Release\install.obj ^
    x64\Release\testapp.obj
 
+pushd x64\Release
+ioctlapp.exe
+popd
+
+goto :end
+
+:float_fail
+echo error: Found floating point instructions
+exit /b 1
+
+:end
 endlocal

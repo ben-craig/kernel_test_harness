@@ -26,8 +26,10 @@ Environment:
 
 #include <ntddk.h>          // various NT definitions
 #include <string.h>
+#include <Ntstrsafe.h>
 
 #include "sioctl.h"
+#include "dummy.h"
 
 #define NT_DEVICE_NAME      L"\\Device\\SIOCTL"
 #define DOS_DEVICE_NAME     L"\\DosDevices\\IoctlTest"
@@ -326,6 +328,7 @@ Return Value:
         inBuf = Irp->AssociatedIrp.SystemBuffer;
         outBuf = Irp->AssociatedIrp.SystemBuffer;
 
+        int retval = add_one();
         //
         // Read the data from the buffer
         //
@@ -342,7 +345,8 @@ Return Value:
         // Write to the buffer over-writes the input buffer content
         //
 
-        RtlCopyBytes(outBuf, data, outBufLength);
+        outBuf[0] = (char)('0'+retval);
+        outBuf[1] = 0;
 
         SIOCTL_KDPRINT(("\tData to User : "));
         PrintChars(outBuf, datalen  );
