@@ -13,6 +13,6 @@
 
 typedef struct TestResults {
     int main_return;
-    int tests_failed;
+    long tests_failed;
     char output[4088];
 } TestResults;

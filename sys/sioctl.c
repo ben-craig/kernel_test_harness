@@ -4,6 +4,7 @@
 
 #include "sioctl.h"
 #include "dummy.h"
+#include <cassert>
 
 #define NT_DEVICE_NAME      L"\\Device\\SIOCTL"
 #define DOS_DEVICE_NAME     L"\\DosDevices\\IoctlTest"
@@ -135,9 +136,6 @@ SioctlUnloadDriver(_In_ PDRIVER_OBJECT DriverObject)
     }
 }
 
-volatile int *g_test_failures;
-char *g_output_buffer;
-int g_space_available;
 
 NTSTATUS
 SioctlDeviceControl(

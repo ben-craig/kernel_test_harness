@@ -41,6 +41,7 @@ set KCCFLAGS=^
 /D_WIN64                                                               ^
 /DPOOL_NX_OPTIN=1                                                      ^
 /DDEBUG                                                                ^
+/I"sys"                                                                ^
 /I"%MY_VC_DIR%\include"                                                ^
 /I"%MY_DDK_INCLUDE%\ucrt"                                              ^
 /I"%MY_DDK_INCLUDE%\km\crt"                                            ^
@@ -79,11 +80,13 @@ mkdir x64\Release
 
 %CC% %KCCFLAGS% /Fox64\Release\sioctl.obj /Fdx64\Release\sioctl.pdb sys\sioctl.c
 %CC% %KCCFLAGS% /Fox64\Release\dummy.obj /Fdx64\Release\dummy.pdb sys\dummy.cpp
+%CC% %KCCFLAGS% /Fox64\Release\doAssert.obj /Fdx64\Release\doAssert.pdb sys\doAssert.c
 
 %LINK_PROG% %KLINK_FLAGS% ^
    /PDB:x64\Release\sioctl.pdb /OUT:x64\Release\sioctl.sys ^
    x64\Release\sioctl.obj ^
-   x64\Release\dummy.obj
+   x64\Release\dummy.obj ^
+   x64\Release\doAssert.obj
 
 echo signtool
 "%MY_DDK_BIN%\x64\signtool.exe" sign /f C:\src\private_cert\NITestingCert.pfx /p foo x64\Release\sioctl.sys
