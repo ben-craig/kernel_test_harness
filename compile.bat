@@ -150,7 +150,7 @@ ucrt.lib                                                                     ^
 AdvApi32.lib
 
 %CC% %UCCFLAGS% /Fox64\Release\install.obj /Fdx64\Release\install.pdb exe\install.c
-%CC% %UCCFLAGS% /Fox64\Release\testapp.obj /Fdx64\Release\testapp.pdb exe\testapp.c
+%CC% %UCCFLAGS% /Fox64\Release\testapp.obj /Fdx64\Release\testapp.pdb exe\testapp.cpp
 
 %LINK_PROG% %ULINK_FLAGS% ^
    /PDB:x64\Release\ioctlapp.pdb /OUT:x64\Release\ioctlapp.exe ^

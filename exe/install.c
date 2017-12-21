@@ -28,7 +28,9 @@ Environment:
 #include <string.h>
 #include <strsafe.h>
 #include <sys\sioctl.h>
+#include "install.h"
 
+/*
 BOOLEAN
 InstallDriver(
     _In_ SC_HANDLE  SchSCManager,
@@ -55,9 +57,9 @@ StopDriver(
     _In_ SC_HANDLE  SchSCManager,
     _In_ LPCTSTR    DriverName,
     BOOLEAN         Quiet
-    );
+    );*/
 
-BOOLEAN
+static BOOLEAN
 InstallDriver(
     _In_ SC_HANDLE  SchSCManager,
     _In_ LPCTSTR    DriverName,
@@ -144,133 +146,7 @@ Return Value:
 
 }   // InstallDriver
 
-BOOLEAN
-ManageDriver(
-    _In_ LPCTSTR  DriverName,
-    _In_ LPCTSTR  ServiceName,
-    _In_ USHORT   Function
-    )
-{
-
-    SC_HANDLE   schSCManager;
-
-    BOOLEAN rCode = TRUE;
-
-    //
-    // Insure (somewhat) that the driver and service names are valid.
-    //
-
-    if (!DriverName || !ServiceName) {
-
-        printf("Invalid Driver or Service provided to ManageDriver() \n");
-
-        return FALSE;
-    }
-
-    //
-    // Connect to the Service Control Manager and open the Services database.
-    //
-
-    schSCManager = OpenSCManager(NULL,                   // local machine
-                                 NULL,                   // local database
-                                 SC_MANAGER_ALL_ACCESS   // access required
-                                 );
-
-    if (!schSCManager) {
-
-        printf("Open SC Manager failed! Error = %d \n", GetLastError());
-
-        return FALSE;
-    }
-
-    //
-    // Do the requested function.
-    //
-
-    switch( Function ) {
-
-        case DRIVER_FUNC_INSTALL:
-
-            //
-            // Install the driver service.
-            //
-
-            if (InstallDriver(schSCManager,
-                              DriverName,
-                              ServiceName
-                              )) {
-
-                //
-                // Start the driver service (i.e. start the driver).
-                //
-
-                rCode = StartDriver(schSCManager,
-                                    DriverName
-                                    );
-
-            } else {
-
-                //
-                // Indicate an error.
-                //
-
-                rCode = FALSE;
-            }
-
-            break;
-
-        case DRIVER_FUNC_REMOVE:
-        case DRIVER_FUNC_QUIET_REMOVE:
-
-            //
-            // Stop the driver.
-            //
-
-            StopDriver(schSCManager,
-                       DriverName,
-                       Function == DRIVER_FUNC_QUIET_REMOVE);
-
-            //
-            // Remove the driver service.
-            //
-
-            RemoveDriver(schSCManager,
-                         DriverName,
-                         Function == DRIVER_FUNC_QUIET_REMOVE
-                         );
-
-            //
-            // Ignore all errors.
-            //
-
-            rCode = TRUE;
-
-            break;
-
-        default:
-
-            printf("Unknown ManageDriver() function. \n");
-
-            rCode = FALSE;
-
-            break;
-    }
-
-    //
-    // Close handle to service control manager.
-    //
-
-    if (schSCManager) {
-
-        CloseServiceHandle(schSCManager);
-    }
-
-    return rCode;
-
-}   // ManageDriver
-
-
-BOOLEAN
+static BOOLEAN
 RemoveDriver(
     _In_ SC_HANDLE    SchSCManager,
     _In_ LPCTSTR      DriverName,
@@ -336,9 +212,7 @@ RemoveDriver(
 
 }   // RemoveDriver
 
-
-
-BOOLEAN
+static BOOLEAN
 StartDriver(
     _In_ SC_HANDLE    SchSCManager,
     _In_ LPCTSTR      DriverName
@@ -414,7 +288,7 @@ StartDriver(
 
 
 
-BOOLEAN
+static BOOLEAN
 StopDriver(
     _In_ SC_HANDLE    SchSCManager,
     _In_ LPCTSTR      DriverName,
@@ -552,5 +426,129 @@ SetupDriverName(
 
 }   // SetupDriverName
 
+BOOLEAN
+ManageDriver(
+    _In_ LPCTSTR  DriverName,
+    _In_ LPCTSTR  ServiceName,
+    _In_ USHORT   Function
+    )
+{
+
+    SC_HANDLE   schSCManager;
+
+    BOOLEAN rCode = TRUE;
+
+    //
+    // Insure (somewhat) that the driver and service names are valid.
+    //
+
+    if (!DriverName || !ServiceName) {
+
+        printf("Invalid Driver or Service provided to ManageDriver() \n");
+
+        return FALSE;
+    }
+
+    //
+    // Connect to the Service Control Manager and open the Services database.
+    //
+
+    schSCManager = OpenSCManager(NULL,                   // local machine
+                                 NULL,                   // local database
+                                 SC_MANAGER_ALL_ACCESS   // access required
+                                 );
+
+    if (!schSCManager) {
+
+        printf("Open SC Manager failed! Error = %d \n", GetLastError());
+
+        return FALSE;
+    }
+
+    //
+    // Do the requested function.
+    //
+
+    switch( Function ) {
+
+        case DRIVER_FUNC_INSTALL:
+
+            //
+            // Install the driver service.
+            //
+
+            if (InstallDriver(schSCManager,
+                              DriverName,
+                              ServiceName
+                              )) {
+
+                //
+                // Start the driver service (i.e. start the driver).
+                //
+
+                rCode = StartDriver(schSCManager,
+                                    DriverName
+                                    );
+
+            } else {
+
+                //
+                // Indicate an error.
+                //
+
+                rCode = FALSE;
+            }
+
+            break;
+
+        case DRIVER_FUNC_REMOVE:
+        case DRIVER_FUNC_QUIET_REMOVE:
+
+            //
+            // Stop the driver.
+            //
+
+            StopDriver(schSCManager,
+                       DriverName,
+                       Function == DRIVER_FUNC_QUIET_REMOVE);
+
+            //
+            // Remove the driver service.
+            //
+
+            RemoveDriver(schSCManager,
+                         DriverName,
+                         Function == DRIVER_FUNC_QUIET_REMOVE
+                         );
+
+            //
+            // Ignore all errors.
+            //
+
+            rCode = TRUE;
+
+            break;
+
+        default:
+
+            printf("Unknown ManageDriver() function. \n");
+
+            rCode = FALSE;
+
+            break;
+    }
+
+    //
+    // Close handle to service control manager.
+    //
+
+    if (schSCManager) {
+
+        CloseServiceHandle(schSCManager);
+    }
+
+    return rCode;
+
+}   // ManageDriver
 
 
