@@ -1,0 +1,202 @@
+ninja_required_version = 1.7
+
+MY_VC_DIR=C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.14.26428
+MY_VC_BIN_DIR=$MY_VC_DIR\bin\Hostx64\x64
+MY_DDK_VER=10.0.17134.0
+MY_DDK_INCLUDE=C:\Program Files (x86)\Windows Kits\10\Include\$MY_DDK_VER
+MY_DDK_LIB=C:\Program Files (x86)\Windows Kits\10\Lib\$MY_DDK_VER
+MY_DDK_BIN=C:\Program Files (x86)\Windows Kits\10\bin\$MY_DDK_VER
+CC="$MY_VC_BIN_DIR\cl.exe"
+
+KCCFLAGS=$
+/nologo                                                               $
+/c                                                                    $
+/W4                                                                   $
+/Zp8                                                                  $
+/Zc:wchar_t                                                           $
+/GS-                                                                  $
+/Zc:forScope                                                          $
+/wd4290                                                               $
+/wo4819                                                               $
+/GR-                                                                  $
+/EHs-c-                                                               $
+/Zl                                                                   $
+/Gz                                                                   $
+/kernel                                                               $
+/Zi                                                                   $
+/Od                                                                   $
+/Oy-                                                                  $
+/D_WIN32_WINNT=0x0601                                                 $
+/DNTDDI_VERSION=0x06010000                                            $
+/D_AMD64_                                                             $
+/DDEPRECATE_DDK_FUNCTIONS                                             $
+/DWIN32                                                               $
+/D_WIN32                                                              $
+/D_WINNT                                                              $
+/D_WIN32_IE=0x0700                                                    $
+/DWINVER=0x0601                                                       $
+/D_AMD64_=1                                                           $
+/DWIN64                                                               $
+/D_WIN64                                                              $
+/DPOOL_NX_OPTIN=1                                                     $
+/DDEBUG                                                               $
+/I"sys"                                                               $
+/I"$MY_VC_DIR\include"                                                $
+/I"$MY_DDK_INCLUDE\ucrt"                                              $
+/I"$MY_DDK_INCLUDE\km\crt"                                            $
+/I"$MY_DDK_INCLUDE\km"                                                $
+/I"$MY_DDK_INCLUDE\shared"
+
+LINK_PROG="$MY_VC_BIN_DIR\link.exe"
+
+KLINK_FLAGS=$
+/nologo                                                                      $
+/OPT:REF                                                                     $
+/IGNORE:4089                                                                 $
+/IGNORE:4210                                                                 $
+/DRIVER                                                                      $
+/IGNORE:4078                                                                 $
+/release                                                                     $
+/nodefaultlib                                                                $
+/safeseh:no                                                                  $
+/entry:DriverEntry                                                           $
+/subsystem:native                                                            $
+/machine:x64                                                                 $
+/incremental:no                                                              $
+/OPT:NOICF                                                                   $
+/DEBUGTYPE:cv,fixup                                                          $
+/DEBUG                                                                       $
+/LIBPATH:"$MY_DDK_LIB\km\x64"                                                $
+BufferOverflowFastFailK.lib                                                  $
+ntoskrnl.lib                                                                 $
+hal.lib                                                                      $
+wmilib.lib                                                                   $
+Ntstrsafe.lib
+
+rule kcompile
+    command = $CC $KCCFLAGS /Fo$out /Fd$out.pdb $in
+    description = KCXX $out
+    deps = msvc
+
+rule klink
+    command = $LINK_PROG $KLINK_FLAGS /PDB:$out.pdb /OUT:$out $in
+    description = KLINK $out
+
+rule signtool
+    command = cmd /c "$MY_DDK_BIN\x64\signtool.exe" sign /f E:\src\private_cert\NITestingCert.pfx /p foo $in > $out
+    description = SIGN $in
+
+rule dummy_pdb
+    command = ""
+
+build x64\Release\sioctl.obj: kcompile sys\sioctl.c
+build x64\Release\sioctl.obj.pdb: dummy_pdb x64\Release\sioctl.obj
+
+build x64\Release\dummy.obj: kcompile sys\dummy.cpp
+build x64\Release\dummy.obj.pdb: dummy_pdb x64\Release\dummy.obj
+
+build x64\Release\doAssert.obj: kcompile sys\doAssert.c
+build x64\Release\doAssert.obj.pdb: dummy_pdb x64\Release\doAssert.obj
+
+build x64\Release\sioctl.sys | x64\Release\sioctl.sys.pdb: klink $
+    x64\Release\sioctl.obj   $
+    x64\Release\dummy.obj    $
+    x64\Release\doAssert.obj
+
+build x64\Release\sioctl.signed: signtool x64\Release\sioctl.sys
+
+DUMPBIN_PROG="$MY_VC_BIN_DIR\dumpbin.exe"
+
+rule asm_dump
+    command = cmd /c $DUMPBIN_PROG /disasm $in > $out
+    description = ASM_DUMP $out
+
+rule check_asm_for_float
+    command = cmd /c findstr xmm $in && exit /b 1 || exit /b 0
+    description = CHECK_ASM_FOR_FLOAT $in
+
+build x64\Release\sioctl.asm: asm_dump x64\Release\sioctl.sys || x64\Release\sioctl.signed
+build check_asm: check_asm_for_float x64\Release\sioctl.asm
+
+UCCFLAGS=$
+/nologo                                                                $
+/c                                                                     $
+/W3                                                                    $
+/Zp8                                                                   $
+/GS-                                                                   $
+/wd4290                                                                $
+/wo4819                                                                $
+/GR-                                                                   $
+/EHs-c-                                                                $
+/Zl                                                                    $
+/Gz                                                                    $
+/Zi                                                                    $
+/Od                                                                    $
+/Oy-                                                                   $
+/MD                                                                    $
+/D_WIN32_WINNT=0x0601                                                  $
+/D_AMD64_                                                              $
+/DWIN32                                                                $
+/D_WIN32                                                               $
+/D_WINNT                                                               $
+/DWINVER=0x0601                                                        $
+/D_AMD64_=1                                                            $
+/DWIN64                                                                $
+/D_WIN64                                                               $
+/DDEBUG                                                                $
+/I"."                                                                  $
+/I"$MY_DDK_INCLUDE\ucrt"                                               $
+/I"$MY_DDK_INCLUDE\um"                                                 $
+/I"$MY_DDK_INCLUDE\shared"                                             $
+/I"$MY_VC_DIR\include"
+
+ULINK_FLAGS=$
+/nologo                                                                      $
+/OPT:REF                                                                     $
+/IGNORE:4089                                                                 $
+/IGNORE:4210                                                                 $
+/IGNORE:4078                                                                 $
+/release                                                                     $
+/subsystem:CONSOLE                                                           $
+/machine:x64                                                                 $
+/incremental:no                                                              $
+/OPT:NOICF                                                                   $
+/NXCOMPAT                                                                    $
+/DYNAMICBASE                                                                 $
+/DEBUGTYPE:cv,fixup                                                          $
+/DEBUG                                                                       $
+/LIBPATH:"$MY_DDK_LIB\um\x64"                                                $
+/LIBPATH:"$MY_DDK_LIB\ucrt\x64"                                              $
+/LIBPATH:"$MY_VC_DIR\lib\x64"                                                $
+msvcrt.lib                                                                   $
+kernel32.lib                                                                 $
+ucrt.lib                                                                     $
+AdvApi32.lib
+
+rule ucompile
+    command = $CC $UCCFLAGS /Fo$out /Fd$out.pdb $in
+    description = UCXX $out
+    deps = msvc
+
+rule ulink
+    command = $LINK_PROG $ULINK_FLAGS /PDB:$out.pdb /OUT:$out $in
+    description = ULINK $out
+
+build x64\Release\install.obj: ucompile exe\install.c
+build x64\Release\install.obj.pdb: dummy_pdb x64\Release\install.obj
+
+build x64\Release\testapp.obj: ucompile exe\testapp.cpp
+build x64\Release\testapp.obj.pdb: dummy_pdb x64\Release\testapp.obj
+
+build x64\Release\ioctlapp.exe | x64\Release\ioctlapp.exe.pdb: ulink $
+    x64\Release\install.obj   $
+    x64\Release\testapp.obj
+
+rule check
+    command = cmd /c pushd $in\.. && $cmd
+    description = CHECK $in
+
+build check: check x64\Release\ioctlapp.exe || check_asm
+    cmd = ioctlapp.exe
+
+default x64\Release\sioctl.signed x64\Release\ioctlapp.exe

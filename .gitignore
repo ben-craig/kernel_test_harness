@@ -1,5 +1,7 @@
 .vs/
 .vscode/
+.ninja_deps
+.ninja_log
 x64/
 x86/
 user_mode/x64/
