@@ -1,8 +1,8 @@
 @echo off
 setlocal
-set MY_VC_DIR=C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.12.25827
+set MY_VC_DIR=C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.14.26428
 set MY_VC_BIN_DIR=%MY_VC_DIR%\bin\Hostx64\x64
-set MY_DDK_VER=10.0.16299.0
+set MY_DDK_VER=10.0.17134.0
 set MY_DDK_INCLUDE=C:\Program Files (x86)\Windows Kits\10\Include\%MY_DDK_VER%
 set MY_DDK_LIB=C:\Program Files (x86)\Windows Kits\10\Lib\%MY_DDK_VER%
 set MY_DDK_BIN=C:\Program Files (x86)\Windows Kits\10\bin\%MY_DDK_VER%
@@ -89,7 +89,7 @@ mkdir x64\Release
    x64\Release\doAssert.obj
 
 echo signtool
-"%MY_DDK_BIN%\x64\signtool.exe" sign /f C:\src\private_cert\NITestingCert.pfx /p foo x64\Release\sioctl.sys
+"%MY_DDK_BIN%\x64\signtool.exe" sign /f E:\src\private_cert\NITestingCert.pfx /p foo x64\Release\sioctl.sys
 
 set DUMPBIN_PROG="%MY_VC_BIN_DIR%\dumpbin.exe"
 
