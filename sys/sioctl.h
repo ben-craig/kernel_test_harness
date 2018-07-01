@@ -9,8 +9,6 @@
 #define DRIVER_FUNC_REMOVE        0x02
 #define DRIVER_FUNC_QUIET_REMOVE  0x03
 
-#define DRIVER_NAME       "sioctl"
-
 typedef struct TestResults {
     int main_return;
     long tests_failed;

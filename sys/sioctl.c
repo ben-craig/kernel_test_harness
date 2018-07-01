@@ -6,8 +6,8 @@
 #include "dummy.h"
 #include <cassert>
 
-#define NT_DEVICE_NAME      L"\\Device\\SIOCTL"
-#define DOS_DEVICE_NAME     L"\\DosDevices\\IoctlTest"
+extern const wchar_t *NT_DEVICE_NAME;
+extern const wchar_t *DOS_DEVICE_NAME;
 
 #if DBG
 #define SIOCTL_KDPRINT(_x_) \

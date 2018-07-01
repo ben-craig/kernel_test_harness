@@ -59,6 +59,25 @@ StopDriver(
     BOOLEAN         Quiet
     );*/
 
+static void PrintError(const char *routine, DWORD err) {
+    char *lpMsgBuf;
+
+    FormatMessageA(
+        FORMAT_MESSAGE_ALLOCATE_BUFFER |
+        FORMAT_MESSAGE_FROM_SYSTEM |
+        FORMAT_MESSAGE_IGNORE_INSERTS,
+        NULL,
+        err,
+        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+        (LPSTR)&lpMsgBuf,
+        0, NULL );
+
+    printf("%s failure! Error = %d \n%s\n", routine, err, lpMsgBuf );
+
+    LocalFree(lpMsgBuf);
+}
+
+
 static BOOLEAN
 InstallDriver(
     _In_ SC_HANDLE  SchSCManager,
@@ -110,21 +129,9 @@ Return Value:
         err = GetLastError();
 
         if (err == ERROR_SERVICE_EXISTS) {
-
-            //
-            // Ignore this error.
-            //
-
             return TRUE;
-
         } else {
-
-            printf("CreateService failed!  Error = %d \n", err );
-
-            //
-            // Indicate an error.
-            //
-
+            PrintError("CreateService", err);
             return  FALSE;
         }
     }
@@ -167,11 +174,7 @@ RemoveDriver(
 
     if (schService == NULL) {
 
-        if(!Quiet) printf("OpenService failed!  Error = %d \n", GetLastError());
-
-        //
-        // Indicate error.
-        //
+        if(!Quiet) PrintError("OpenService", GetLastError());
 
         return FALSE;
     }
@@ -190,11 +193,7 @@ RemoveDriver(
 
     } else {
 
-        if(!Quiet) printf("DeleteService failed!  Error = %d \n", GetLastError());
-
-        //
-        // Indicate failure.  Fall through to properly close the service handle.
-        //
+        if(!Quiet) PrintError("DeleteService", GetLastError());
 
         rCode = FALSE;
     }
@@ -232,12 +231,7 @@ StartDriver(
 
     if (schService == NULL) {
 
-        printf("OpenService failed!  Error = %d \n", GetLastError());
-
-        //
-        // Indicate failure.
-        //
-
+        PrintError("OpenService", GetLastError());
         return FALSE;
     }
 
@@ -261,13 +255,7 @@ StartDriver(
             return TRUE;
 
         } else {
-
-            printf("StartService failure! Error = %d \n", err );
-
-            //
-            // Indicate failure.  Fall through to properly close the service handle.
-            //
-
+            PrintError("StartService", err);
             return FALSE;
         }
 
@@ -310,7 +298,7 @@ StopDriver(
 
     if (schService == NULL) {
 
-        if(!Quiet) printf("OpenService failed!  Error = %d \n", GetLastError());
+        if(!Quiet) PrintError("OpenService", GetLastError());
 
         return FALSE;
     }
@@ -332,12 +320,7 @@ StopDriver(
 
     } else {
 
-        if(!Quiet) printf("ControlService failed!  Error = %d \n", GetLastError() );
-
-        //
-        // Indicate failure.  Fall through to properly close the service handle.
-        //
-
+        if(!Quiet) PrintError("ControlService", GetLastError());
         rCode = FALSE;
     }
 
@@ -353,78 +336,6 @@ StopDriver(
     return rCode;
 
 }   //  StopDriver
-
-BOOLEAN
-SetupDriverName(
-    _Inout_updates_bytes_all_(BufferLength) PCHAR DriverLocation,
-    _In_ ULONG BufferLength
-    )
-{
-    HANDLE fileHandle;
-    DWORD driverLocLen = 0;
-
-    //
-    // Get the current directory.
-    //
-
-    driverLocLen = GetCurrentDirectory(BufferLength,
-                                       DriverLocation
-                                       );
-
-    if (driverLocLen == 0) {
-
-        printf("GetCurrentDirectory failed!  Error = %d \n", GetLastError());
-
-        return FALSE;
-    }
-
-    //
-    // Setup path name to driver file.
-    //
-    if (FAILED( StringCbCat(DriverLocation, BufferLength, "\\"DRIVER_NAME".sys") )) {
-        return FALSE;
-    }
-
-    //
-    // Insure driver file is in the specified directory.
-    //
-
-    if ((fileHandle = CreateFile(DriverLocation,
-                                 GENERIC_READ,
-                                 0,
-                                 NULL,
-                                 OPEN_EXISTING,
-                                 FILE_ATTRIBUTE_NORMAL,
-                                 NULL
-                                 )) == INVALID_HANDLE_VALUE) {
-
-
-        printf("%s.sys is not loaded.\n", DRIVER_NAME);
-
-        //
-        // Indicate failure.
-        //
-
-        return FALSE;
-    }
-
-    //
-    // Close open file handle.
-    //
-
-    if (fileHandle) {
-
-        CloseHandle(fileHandle);
-    }
-
-    //
-    // Indicate success.
-    //
-
-    return TRUE;
-
-
-}   // SetupDriverName
 
 BOOLEAN
 ManageDriver(
@@ -460,8 +371,7 @@ ManageDriver(
 
     if (!schSCManager) {
 
-        printf("Open SC Manager failed! Error = %d \n", GetLastError());
-
+        PrintError("OpenSCManager", GetLastError());
         return FALSE;
     }
 

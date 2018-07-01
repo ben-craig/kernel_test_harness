@@ -6,48 +6,50 @@ MY_DDK_VER=10.0.17134.0
 MY_DDK_INCLUDE=C:\Program Files (x86)\Windows Kits\10\Include\$MY_DDK_VER
 MY_DDK_LIB=C:\Program Files (x86)\Windows Kits\10\Lib\$MY_DDK_VER
 MY_DDK_BIN=C:\Program Files (x86)\Windows Kits\10\bin\$MY_DDK_VER
+MY_PRIVATE_CERT=E:\src\private_cert\NITestingCert.pfx
 CC="$MY_VC_BIN_DIR\cl.exe"
+LINK_PROG="$MY_VC_BIN_DIR\link.exe"
+DUMPBIN_PROG="$MY_VC_BIN_DIR\dumpbin.exe"
 
 KCCFLAGS=$
-/nologo                                                               $
-/c                                                                    $
-/W4                                                                   $
-/Zp8                                                                  $
-/Zc:wchar_t                                                           $
-/GS-                                                                  $
-/Zc:forScope                                                          $
-/wd4290                                                               $
-/wo4819                                                               $
-/GR-                                                                  $
-/EHs-c-                                                               $
-/Zl                                                                   $
-/Gz                                                                   $
-/kernel                                                               $
-/Zi                                                                   $
-/Od                                                                   $
-/Oy-                                                                  $
-/D_WIN32_WINNT=0x0601                                                 $
-/DNTDDI_VERSION=0x06010000                                            $
-/D_AMD64_                                                             $
-/DDEPRECATE_DDK_FUNCTIONS                                             $
-/DWIN32                                                               $
-/D_WIN32                                                              $
-/D_WINNT                                                              $
-/D_WIN32_IE=0x0700                                                    $
-/DWINVER=0x0601                                                       $
-/D_AMD64_=1                                                           $
-/DWIN64                                                               $
-/D_WIN64                                                              $
-/DPOOL_NX_OPTIN=1                                                     $
-/DDEBUG                                                               $
-/I"sys"                                                               $
-/I"$MY_VC_DIR\include"                                                $
-/I"$MY_DDK_INCLUDE\ucrt"                                              $
-/I"$MY_DDK_INCLUDE\km\crt"                                            $
-/I"$MY_DDK_INCLUDE\km"                                                $
+/nologo                                      $
+/c                                           $
+/W4                                          $
+/WX                                          $
+/Zp8                                         $
+/Zc:wchar_t                                  $
+/GS-                                         $
+/Zc:forScope                                 $
+/wd4290                                      $
+/wo4819                                      $
+/GR-                                         $
+/EHs-c-                                      $
+/Zl                                          $
+/Gz                                          $
+/kernel                                      $
+/Zi                                          $
+/Od                                          $
+/Oy-                                         $
+/D_WIN32_WINNT=0x0601                        $
+/DNTDDI_VERSION=0x06010000                   $
+/D_AMD64_                                    $
+/DDEPRECATE_DDK_FUNCTIONS                    $
+/DWIN32                                      $
+/D_WIN32                                     $
+/D_WINNT                                     $
+/D_WIN32_IE=0x0700                           $
+/DWINVER=0x0601                              $
+/D_AMD64_=1                                  $
+/DWIN64                                      $
+/D_WIN64                                     $
+/DPOOL_NX_OPTIN=1                            $
+/DDEBUG                                      $
+/I"sys"                                      $
+/I"$MY_VC_DIR\include"                       $
+/I"$MY_DDK_INCLUDE\ucrt"                     $
+/I"$MY_DDK_INCLUDE\km\crt"                   $
+/I"$MY_DDK_INCLUDE\km"                       $
 /I"$MY_DDK_INCLUDE\shared"
-
-LINK_PROG="$MY_VC_BIN_DIR\link.exe"
 
 KLINK_FLAGS=$
 /nologo                                                                      $
@@ -73,81 +75,37 @@ hal.lib                                                                      $
 wmilib.lib                                                                   $
 Ntstrsafe.lib
 
-rule kcompile
-    command = $CC $KCCFLAGS /Fo$out /Fd$out.pdb $in
-    description = KCXX $out
-    deps = msvc
-
-rule klink
-    command = $LINK_PROG $KLINK_FLAGS /PDB:$out.pdb /OUT:$out $in
-    description = KLINK $out
-
-rule signtool
-    command = cmd /c "$MY_DDK_BIN\x64\signtool.exe" sign /f E:\src\private_cert\NITestingCert.pfx /p foo $in > $out
-    description = SIGN $in
-
-rule dummy_pdb
-    command = ""
-
-build x64\Release\sioctl.obj: kcompile sys\sioctl.c
-build x64\Release\sioctl.obj.pdb: dummy_pdb x64\Release\sioctl.obj
-
-build x64\Release\dummy.obj: kcompile sys\dummy.cpp
-build x64\Release\dummy.obj.pdb: dummy_pdb x64\Release\dummy.obj
-
-build x64\Release\doAssert.obj: kcompile sys\doAssert.c
-build x64\Release\doAssert.obj.pdb: dummy_pdb x64\Release\doAssert.obj
-
-build x64\Release\sioctl.sys | x64\Release\sioctl.sys.pdb: klink $
-    x64\Release\sioctl.obj   $
-    x64\Release\dummy.obj    $
-    x64\Release\doAssert.obj
-
-build x64\Release\sioctl.signed: signtool x64\Release\sioctl.sys
-
-DUMPBIN_PROG="$MY_VC_BIN_DIR\dumpbin.exe"
-
-rule asm_dump
-    command = cmd /c $DUMPBIN_PROG /disasm $in > $out
-    description = ASM_DUMP $out
-
-rule check_asm_for_float
-    command = cmd /c findstr xmm $in && exit /b 1 || exit /b 0
-    description = CHECK_ASM_FOR_FLOAT $in
-
-build x64\Release\sioctl.asm: asm_dump x64\Release\sioctl.sys || x64\Release\sioctl.signed
-build check_asm: check_asm_for_float x64\Release\sioctl.asm
-
 UCCFLAGS=$
-/nologo                                                                $
-/c                                                                     $
-/W3                                                                    $
-/Zp8                                                                   $
-/GS-                                                                   $
-/wd4290                                                                $
-/wo4819                                                                $
-/GR-                                                                   $
-/EHs-c-                                                                $
-/Zl                                                                    $
-/Gz                                                                    $
-/Zi                                                                    $
-/Od                                                                    $
-/Oy-                                                                   $
-/MD                                                                    $
-/D_WIN32_WINNT=0x0601                                                  $
-/D_AMD64_                                                              $
-/DWIN32                                                                $
-/D_WIN32                                                               $
-/D_WINNT                                                               $
-/DWINVER=0x0601                                                        $
-/D_AMD64_=1                                                            $
-/DWIN64                                                                $
-/D_WIN64                                                               $
-/DDEBUG                                                                $
-/I"."                                                                  $
-/I"$MY_DDK_INCLUDE\ucrt"                                               $
-/I"$MY_DDK_INCLUDE\um"                                                 $
-/I"$MY_DDK_INCLUDE\shared"                                             $
+/nologo                                      $
+/c                                           $
+/W3                                          $
+/WX                                          $
+/Zp8                                         $
+/GS-                                         $
+/wd4290                                      $
+/wo4819                                      $
+/GR-                                         $
+/EHsc                                        $
+/Zl                                          $
+/Gz                                          $
+/Zi                                          $
+/Od                                          $
+/Oy-                                         $
+/MD                                          $
+/D_WIN32_WINNT=0x0601                        $
+/D_AMD64_                                    $
+/DWIN32                                      $
+/D_WIN32                                     $
+/D_WINNT                                     $
+/DWINVER=0x0601                              $
+/D_AMD64_=1                                  $
+/DWIN64                                      $
+/D_WIN64                                     $
+/DDEBUG                                      $
+/I"."                                        $
+/I"$MY_DDK_INCLUDE\ucrt"                     $
+/I"$MY_DDK_INCLUDE\um"                       $
+/I"$MY_DDK_INCLUDE\shared"                   $
 /I"$MY_VC_DIR\include"
 
 ULINK_FLAGS=$
@@ -173,6 +131,9 @@ kernel32.lib                                                                 $
 ucrt.lib                                                                     $
 AdvApi32.lib
 
+rule dummy_pdb
+    command = ""
+
 rule ucompile
     command = $CC $UCCFLAGS /Fo$out /Fd$out.pdb $in
     description = UCXX $out
@@ -182,6 +143,20 @@ rule ulink
     command = $LINK_PROG $ULINK_FLAGS /PDB:$out.pdb /OUT:$out $in
     description = ULINK $out
 
+rule kcompile
+    command = $CC $KCCFLAGS /Fo$out /Fd$out.pdb $in
+    description = KCXX $out
+    deps = msvc
+
+rule klink
+    command = $LINK_PROG $KLINK_FLAGS /PDB:$out.pdb /OUT:$out $in
+    description = KLINK $out
+
+rule signtool
+    command = cmd /c "$MY_DDK_BIN\x64\signtool.exe" sign /f $MY_PRIVATE_CERT /p foo $in > $out
+    description = SIGN $in
+
+# user builds
 build x64\Release\install.obj: ucompile exe\install.c
 build x64\Release\install.obj.pdb: dummy_pdb x64\Release\install.obj
 
@@ -192,11 +167,85 @@ build x64\Release\ioctlapp.exe | x64\Release\ioctlapp.exe.pdb: ulink $
     x64\Release\install.obj   $
     x64\Release\testapp.obj
 
-rule check
-    command = cmd /c pushd $in\.. && $cmd
-    description = CHECK $in
+# kernel builds
+build x64\Release\sioctl.obj: kcompile sys\sioctl.c
+build x64\Release\sioctl.obj.pdb: dummy_pdb x64\Release\sioctl.obj
 
-build check: check x64\Release\ioctlapp.exe || check_asm
-    cmd = ioctlapp.exe
+build x64\Release\doAssert.obj: kcompile sys\doAssert.c
+build x64\Release\doAssert.obj.pdb: dummy_pdb x64\Release\doAssert.obj
+
+build x64\Release\devName.obj: kcompile sys\devName.cpp
+build x64\Release\devName.obj.pdb: dummy_pdb x64\Release\devName.obj
+
+build x64\Release\devName1.obj: kcompile sys\devName1.cpp
+build x64\Release\devName1.obj.pdb: dummy_pdb x64\Release\devName1.obj
+build x64\Release\devName2.obj: kcompile sys\devName2.cpp
+build x64\Release\devName2.obj.pdb: dummy_pdb x64\Release\devName2.obj
+build x64\Release\devName3.obj: kcompile sys\devName3.cpp
+build x64\Release\devName3.obj.pdb: dummy_pdb x64\Release\devName3.obj
+build x64\Release\devName4.obj: kcompile sys\devName4.cpp
+build x64\Release\devName4.obj.pdb: dummy_pdb x64\Release\devName4.obj
+build x64\Release\devName5.obj: kcompile sys\devName5.cpp
+build x64\Release\devName5.obj.pdb: dummy_pdb x64\Release\devName5.obj
+
+build x64\Release\dummy.obj: kcompile sys\dummy.cpp
+build x64\Release\dummy.obj.pdb: dummy_pdb x64\Release\dummy.obj
+
+build x64\Release\sioctl.sys | x64\Release\sioctl.sys.pdb: klink $
+    x64\Release\dummy.obj x64\Release\devName.obj x64\Release\doAssert.obj x64\Release\sioctl.obj
+build x64\Release\sioctl.signed: signtool x64\Release\sioctl.sys
+
+build x64\Release\sioctl1.sys | x64\Release\sioctl1.sys.pdb: klink $
+    x64\Release\dummy.obj x64\Release\devName1.obj x64\Release\doAssert.obj x64\Release\sioctl.obj
+build x64\Release\sioctl1.signed: signtool x64\Release\sioctl1.sys
+
+build x64\Release\sioctl2.sys | x64\Release\sioctl2.sys.pdb: klink $
+    x64\Release\dummy.obj x64\Release\devName2.obj x64\Release\doAssert.obj x64\Release\sioctl.obj
+build x64\Release\sioctl2.signed: signtool x64\Release\sioctl2.sys
+
+build x64\Release\sioctl3.sys | x64\Release\sioctl3.sys.pdb: klink $
+    x64\Release\dummy.obj x64\Release\devName3.obj x64\Release\doAssert.obj x64\Release\sioctl.obj
+build x64\Release\sioctl3.signed: signtool x64\Release\sioctl3.sys
+
+build x64\Release\sioctl4.sys | x64\Release\sioctl4.sys.pdb: klink $
+    x64\Release\dummy.obj x64\Release\devName4.obj x64\Release\doAssert.obj x64\Release\sioctl.obj
+build x64\Release\sioctl4.signed: signtool x64\Release\sioctl4.sys
+
+build x64\Release\sioctl5.sys | x64\Release\sioctl5.sys.pdb: klink $
+    x64\Release\dummy.obj x64\Release\devName5.obj x64\Release\doAssert.obj x64\Release\sioctl.obj
+build x64\Release\sioctl5.signed: signtool x64\Release\sioctl5.sys
+
+# check rules and builds
+rule asm_dump
+    command = cmd /c $DUMPBIN_PROG /disasm $in > $out
+    description = ASM_DUMP $out
+
+rule check_asm_for_float
+    command = cmd /c findstr xmm $in && exit /b 1 || exit /b 0
+    description = CHECK_ASM_FOR_FLOAT $in
+
+build x64\Release\sioctl.asm: asm_dump x64\Release\sioctl.sys || x64\Release\sioctl.signed
+build check_asm: check_asm_for_float x64\Release\sioctl.asm
+
+rule check
+    command = x64\Release\ioctlapp.exe $in $devPath
+    description = CHECK $in $devPath
+
+
+
+build check0: check x64\Release\sioctl.sys || x64\Release\sioctl.signed x64\Release\ioctlapp.exe check_asm
+    devPath = x64.Release.sioctl.sys
+build check1: check x64\Release\sioctl1.sys || x64\Release\sioctl1.signed x64\Release\ioctlapp.exe
+    devPath = x64.Release.sioctl.sys.1
+build check2: check x64\Release\sioctl2.sys || x64\Release\sioctl2.signed x64\Release\ioctlapp.exe
+    devPath = x64.Release.sioctl.sys.2
+build check3: check x64\Release\sioctl3.sys || x64\Release\sioctl3.signed x64\Release\ioctlapp.exe
+    devPath = x64.Release.sioctl.sys.3
+build check4: check x64\Release\sioctl4.sys || x64\Release\sioctl4.signed x64\Release\ioctlapp.exe
+    devPath = x64.Release.sioctl.sys.4
+build check5: check x64\Release\sioctl5.sys || x64\Release\sioctl5.signed x64\Release\ioctlapp.exe
+    devPath = x64.Release.sioctl.sys.5
+
+build check: phony || check0 check1 check2 check3 check4 check5
 
 default x64\Release\sioctl.signed x64\Release\ioctlapp.exe

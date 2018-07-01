@@ -2,6 +2,7 @@
 #include <winioctl.h>
 #include <stdio.h>
 #include <cstdlib>
+#include <string>
 
 #include "sys\sioctl.h"
 #include "install.h"
@@ -12,38 +13,42 @@ char InputBuffer[1];
 class DriverLoader
 {
 private:
-    const char  *loc;
+    const char *loc;
+    const char *name;
 public:
-    explicit DriverLoader(const char *location) : 
-        loc(location) 
+    explicit DriverLoader(const char *location, const char *driver_name) :
+        loc(location),
+        name(driver_name)
     {
-        ManageDriver(DRIVER_NAME, loc, DRIVER_FUNC_QUIET_REMOVE);
+        ManageDriver(name, loc, DRIVER_FUNC_QUIET_REMOVE);
         BOOLEAN result =
-            ManageDriver(DRIVER_NAME, loc, DRIVER_FUNC_INSTALL);
+            ManageDriver(name, loc, DRIVER_FUNC_INSTALL);
         if (!result)
         {
             printf("Unable to install driver. \n");
-            ManageDriver(DRIVER_NAME, loc, DRIVER_FUNC_REMOVE);
+            ManageDriver(name, loc, DRIVER_FUNC_REMOVE);
             std::exit(-2);
         }
     }
-    ~DriverLoader() 
+    ~DriverLoader()
     {
-        ManageDriver(DRIVER_NAME, loc, DRIVER_FUNC_REMOVE);            
+        ManageDriver(name, loc, DRIVER_FUNC_REMOVE);
     }
 };
 
 struct DeviceOpener {
     HANDLE h = INVALID_HANDLE_VALUE;
-    DeviceOpener()
+    explicit DeviceOpener(const char *driverName)
     {
-        h = CreateFile( "\\\\.\\IoctlTest",
-                            GENERIC_READ | GENERIC_WRITE,
-                            0,
-                            NULL,
-                            CREATE_ALWAYS,
-                            FILE_ATTRIBUTE_NORMAL,
-                            NULL);
+        std::string dosName = "\\\\.\\";
+        dosName += driverName;
+        h = CreateFile( dosName.c_str(),
+                        GENERIC_READ | GENERIC_WRITE,
+                        0,
+                        NULL,
+                        CREATE_ALWAYS,
+                        FILE_ATTRIBUTE_NORMAL,
+                        NULL);
 
         if ( h == INVALID_HANDLE_VALUE ){
             printf ( "Error: CreateFile Failed : %d\n", GetLastError());
@@ -53,18 +58,18 @@ struct DeviceOpener {
     ~DeviceOpener() {CloseHandle ( h );}
 };
 
-int __cdecl main()
+int __cdecl main(int argc, char *argv[])
 {
-    BOOL bRc;
-    ULONG bytesReturned;
-    TCHAR driverLocation[MAX_PATH];
-
-    if (!SetupDriverName(driverLocation, sizeof(driverLocation))) {
-        printf ( "Error in SetupDriverName : %d", GetLastError());
+    if(argc < 3) {
+        printf( "Usage: %s <some\\path\\foo.sys> <driver_dos_name>\n", argv[0]);
         return -2;
     }
-    DriverLoader d(driverLocation);
-    DeviceOpener dev;
+    BOOL bRc;
+    ULONG bytesReturned;
+    char filePathBuf[MAX_PATH] = {0};
+    ::GetFullPathNameA(argv[1], sizeof(filePathBuf), filePathBuf, nullptr);
+    DriverLoader d(filePathBuf, argv[2]);
+    DeviceOpener dev(argv[2]);
 
     bRc = DeviceIoControl ( dev.h,
                             (DWORD) IOCTL_SIOCTL_METHOD_RUN_TEST,
