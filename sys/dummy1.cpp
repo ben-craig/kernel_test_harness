@@ -6,5 +6,5 @@ extern "C" int main()
 {
     std::mt19937_64 gen(1);
     std::uniform_int_distribution<> dis(1, 100);
-    assert(dis(gen) == 1);
+    //assert(dis(gen) == 1);
 }

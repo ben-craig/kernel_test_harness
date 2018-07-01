@@ -95,9 +95,5 @@ int __cdecl main(int argc, char *argv[])
             OutputBuffer.output);
         return 1;
     }
-    printf("retval: %d\ntests failed: %d\noutput =\n%s\n",
-        OutputBuffer.main_return,
-        OutputBuffer.tests_failed,
-        OutputBuffer.output);
     return 0;
 }
