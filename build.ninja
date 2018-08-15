@@ -11,124 +11,128 @@ CC="$MY_VC_BIN_DIR\cl.exe"
 LINK_PROG="$MY_VC_BIN_DIR\link.exe"
 DUMPBIN_PROG="$MY_VC_BIN_DIR\dumpbin.exe"
 
-KCCFLAGS=$
-/nologo                    $
-/c                         $
-/W4                        $
-/WX                        $
-/Zp8                       $
-/Zc:wchar_t                $
-/GS-                       $
-/Zc:forScope               $
-/wd4290                    $
-/wo4819                    $
-/GR-                       $
-/EHs-c-                    $
-/Zl                        $
-/Gz                        $
-/kernel                    $
-/Zi                        $
-/Od                        $
-/Oy-                       $
-/D_WIN32_WINNT=0x0601      $
+MY_LIBCXX_PATH=E:\build\libcxx\test_install\include\c++\v1
+
+KCCFLAGS= $
+/nologo $
+/TP $
+/c $
+/std:c++latest $
+/Wv:18 $
+/W4 $
+/WX $
+/Zp8 $
+/Zc:wchar_t $
+/GS- $
+/Zc:forScope $
+/wd4290 $
+/wo4819 $
+/GR- $
+/EHs-c- $
+/Zl $
+/Gz $
+/kernel $
+/Zi $
+/Od $
+/Oy- $
+/D_WIN32_WINNT=0x0601 $
 /DNTDDI_VERSION=0x06010000 $
-/D_AMD64_                  $
-/DDEPRECATE_DDK_FUNCTIONS  $
-/DWIN32                    $
-/D_WIN32                   $
-/D_WINNT                   $
-/D_WIN32_IE=0x0700         $
-/DWINVER=0x0601            $
-/D_AMD64_=1                $
-/DWIN64                    $
-/D_WIN64                   $
-/DPOOL_NX_OPTIN=1          $
-/DDEBUG                    $
-/I"sys"                    $
-/I"$MY_VC_DIR\include"     $
-/I"$MY_DDK_INCLUDE\ucrt"   $
+/D_AMD64_ $
+/DDEPRECATE_DDK_FUNCTIONS $
+/DWIN32 $
+/D_WIN32 $
+/D_WINNT $
+/D_WIN32_IE=0x0700 $
+/DWINVER=0x0601 $
+/D_AMD64_=1 $
+/DWIN64 $
+/D_WIN64 $
+/DPOOL_NX_OPTIN=1 $
+/DDEBUG $
+/I"sys" $
+/I"$MY_LIBCXX_PATH" $
 /I"$MY_DDK_INCLUDE\km\crt" $
-/I"$MY_DDK_INCLUDE\km"     $
+/I"$MY_DDK_INCLUDE\km" $
 /I"$MY_DDK_INCLUDE\shared"
 
-KLINK_FLAGS=$
-/nologo                       $
-/OPT:REF                      $
-/IGNORE:4089                  $
-/IGNORE:4210                  $
-/DRIVER                       $
-/IGNORE:4078                  $
-/release                      $
-/nodefaultlib                 $
-/safeseh:no                   $
-/entry:DriverEntry            $
-/subsystem:native             $
-/machine:x64                  $
-/incremental:no               $
-/OPT:NOICF                    $
-/DEBUGTYPE:cv,fixup           $
-/DEBUG                        $
+KLINK_FLAGS= $
+/nologo $
+/OPT:REF $
+/IGNORE:4089 $
+/IGNORE:4210 $
+/DRIVER $
+/IGNORE:4078 $
+/release $
+/nodefaultlib $
+/safeseh:no $
+/entry:DriverEntry $
+/subsystem:native $
+/machine:x64 $
+/incremental:no $
+/OPT:NOICF $
+/DEBUGTYPE:cv,fixup $
+/DEBUG $
 /LIBPATH:"$MY_DDK_LIB\km\x64" $
-BufferOverflowFastFailK.lib   $
-ntoskrnl.lib                  $
-hal.lib                       $
-wmilib.lib                    $
+BufferOverflowFastFailK.lib $
+ntoskrnl.lib $
+hal.lib $
+wmilib.lib $
 Ntstrsafe.lib
 
-UCCFLAGS=$
-/nologo                    $
-/c                         $
-/W3                        $
-/WX                        $
-/Zp8                       $
-/GS-                       $
-/wd4290                    $
-/wo4819                    $
-/GR-                       $
-/EHsc                      $
-/Zl                        $
-/Gz                        $
-/Zi                        $
-/Od                        $
-/Oy-                       $
-/MD                        $
-/D_WIN32_WINNT=0x0601      $
-/D_AMD64_                  $
-/DWIN32                    $
-/D_WIN32                   $
-/D_WINNT                   $
-/DWINVER=0x0601            $
-/D_AMD64_=1                $
-/DWIN64                    $
-/D_WIN64                   $
-/DDEBUG                    $
-/I"."                      $
-/I"$MY_DDK_INCLUDE\ucrt"   $
-/I"$MY_DDK_INCLUDE\um"     $
+UCCFLAGS= $
+/nologo $
+/c $
+/W3 $
+/WX $
+/Zp8 $
+/GS- $
+/wd4290 $
+/wo4819 $
+/GR- $
+/EHsc $
+/Zl $
+/Gz $
+/Zi $
+/Od $
+/Oy- $
+/MD $
+/D_WIN32_WINNT=0x0601 $
+/D_AMD64_ $
+/DWIN32 $
+/D_WIN32 $
+/D_WINNT $
+/DWINVER=0x0601 $
+/D_AMD64_=1 $
+/DWIN64 $
+/D_WIN64 $
+/DDEBUG $
+/I"." $
+/I"$MY_DDK_INCLUDE\ucrt" $
+/I"$MY_DDK_INCLUDE\um" $
 /I"$MY_DDK_INCLUDE\shared" $
 /I"$MY_VC_DIR\include"
 
-ULINK_FLAGS=$
-/nologo                         $
-/OPT:REF                        $
-/IGNORE:4089                    $
-/IGNORE:4210                    $
-/IGNORE:4078                    $
-/release                        $
-/subsystem:CONSOLE              $
-/machine:x64                    $
-/incremental:no                 $
-/OPT:NOICF                      $
-/NXCOMPAT                       $
-/DYNAMICBASE                    $
-/DEBUGTYPE:cv,fixup             $
-/DEBUG                          $
-/LIBPATH:"$MY_DDK_LIB\um\x64"   $
+ULINK_FLAGS= $
+/nologo $
+/OPT:REF $
+/IGNORE:4089 $
+/IGNORE:4210 $
+/IGNORE:4078 $
+/release $
+/subsystem:CONSOLE $
+/machine:x64 $
+/incremental:no $
+/OPT:NOICF $
+/NXCOMPAT $
+/DYNAMICBASE $
+/DEBUGTYPE:cv,fixup $
+/DEBUG $
+/LIBPATH:"$MY_DDK_LIB\um\x64" $
 /LIBPATH:"$MY_DDK_LIB\ucrt\x64" $
-/LIBPATH:"$MY_VC_DIR\lib\x64"   $
-msvcrt.lib                      $
-kernel32.lib                    $
-ucrt.lib                        $
+/LIBPATH:"$MY_VC_DIR\lib\x64" $
+msvcrt.lib $
+kernel32.lib $
+ucrt.lib $
 AdvApi32.lib
 
 rule dummy_dep
@@ -142,6 +146,8 @@ rule ucompile
 rule ulink
     command = $LINK_PROG $ULINK_FLAGS /PDB:$out.pdb /OUT:$out $in
     description = ULINK $out
+
+#preprocess= /P /Fi$out.i
 
 rule kcompile
     command = $CC $KCCFLAGS /Fo$out /Fd$out.pdb $in
@@ -164,7 +170,7 @@ build x64\Release\testapp.obj: ucompile exe\testapp.cpp
 build x64\Release\testapp.obj.pdb: dummy_dep x64\Release\testapp.obj
 
 build x64\Release\ioctlapp.exe | x64\Release\ioctlapp.exe.pdb: ulink $
-    x64\Release\install.obj   $
+    x64\Release\install.obj $
     x64\Release\testapp.obj
 
 # kernel builds

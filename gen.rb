@@ -1,10 +1,5 @@
 TEST_FILES = [
     "sys\\dummy.cpp",
-    "sys\\dummy1.cpp",
-    "sys\\dummy2.cpp",
-    "sys\\dummy3.cpp",
-    "sys\\dummy4.cpp",
-    "sys\\dummy5.cpp",
 ]
 
 DEST_ROOT = "x64\\Release"
@@ -51,8 +46,8 @@ def makedirs(*dirs)
 end
 
 
-NT_DEVICE_NAME = %q{extern "C" const wchar_t *NT_DEVICE_NAME = L"\\\\Device\\\\}
-DOS_DEVICE_NAME = %q{extern "C" const wchar_t *DOS_DEVICE_NAME = L"\\\\DosDevices\\\\}
+NT_DEVICE_NAME = %q{const wchar_t *NT_DEVICE_NAME = L"\\\\Device\\\\}
+DOS_DEVICE_NAME = %q{const wchar_t *DOS_DEVICE_NAME = L"\\\\DosDevices\\\\}
 
 def genDevSrc(devSrc, devName)
     makedirs(File.dirname(devSrc.gsub("\\", "/")))

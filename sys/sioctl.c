@@ -18,6 +18,7 @@ extern const wchar_t *DOS_DEVICE_NAME;
 #define SIOCTL_KDPRINT(_x_)
 #endif
 
+extern "C" {
 // Device driver routine declarations.
 DRIVER_INITIALIZE DriverEntry;
 
@@ -34,6 +35,7 @@ VOID
 PrintIrpInfo(
     PIRP Irp
     );
+}
 
 #ifdef ALLOC_PRAGMA
 #pragma alloc_text( INIT, DriverEntry )
@@ -43,6 +45,7 @@ PrintIrpInfo(
 #pragma alloc_text( PAGE, PrintIrpInfo)
 #endif // ALLOC_PRAGMA
 
+extern "C" {
 
 NTSTATUS
 DriverEntry(
@@ -167,7 +170,7 @@ SioctlDeviceControl(
         SIOCTL_KDPRINT(("Called IOCTL_SIOCTL_METHOD_RUN_TEST\n"));
         PrintIrpInfo(Irp);
 
-        outBuf = Irp->AssociatedIrp.SystemBuffer;
+        outBuf = static_cast<TestResults *>(Irp->AssociatedIrp.SystemBuffer);
 
         g_test_failures = &outBuf->tests_failed;
         g_output_buffer = outBuf->output;
@@ -223,3 +226,5 @@ PrintIrpInfo(
         irpSp->Parameters.DeviceIoControl.OutputBufferLength ));
     return;
 }
+
+} // extern "C"
