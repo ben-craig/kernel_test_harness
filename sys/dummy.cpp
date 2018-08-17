@@ -1,7 +1,7 @@
 #include <algorithm>
 #include <array>
 #include <atomic>
-////#include <bitset>
+//#include <bitset>
 #include <cassert> //special
 ////#include <cerrno>
 ////#include <cfloat>
@@ -10,7 +10,7 @@
 //#include <cinttypes>
 #include <ciso646>
 #include <climits>
-//#include <cmath>
+#include <cmath>
 ////#include <compare>
 #include <csetjmp>
 //#include <cstdalign>
@@ -30,7 +30,7 @@
 #include <new>
 #include <numeric>
 ////#include <optional>
-//#include <random>
+#include <random>
 #include <ratio>
 //#include <span>
 ////#include <string>
