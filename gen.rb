@@ -1,12 +1,134 @@
-TEST_FILES = [
-    "\\src\\llvm\\runtimes\\libcxx\\test\\std\\nothing_to_do.pass.cpp",
-    "\\src\\llvm\\runtimes\\libcxx\\test\\std\\algorithms\\alg.nonmodifying\\mismatch\\mismatch.pass.cpp",
+TEST_ROOT = "\\src\\llvm\\runtimes\\libcxx\\test"
+
+TEST_DIRS = [
+    "std\\language.support\\support.types",
+    # beware of floats in limits
+    "std\\language.support\\support.limits",
+    "std\\language.support\\cstdint",
+    # beware of allocations
+    "std\\language.support\\support.dynamic",
+    #     "std\\language.support\\support.rtti",
+    #     "std\\language.support\\support.exception",
+    "std\\language.support\\support.initlist",
+    #     "std\\language.support\\cmp",   #doesn't exist yet
+    "std\\language.support\\support.runtime\\cstdarg.pass.cpp",
+    "std\\language.support\\support.runtime\\cstdbool.pass.cpp",
+    #     "std\\language.support\\support.start.term",
+    "std\\diagnostics\\errno",
+    "std\\diagnostics\\syserr\\errc.pass.cpp",
+    "std\\utilities\\utility",
+    "std\\utilities\\tuple",
+    "std\\utilities\\allocator.tag",
+    "std\\utilities\\allocator.traits",
+    "std\\utilities\\allocator.uses",
+    "std\\utilities\\pointer.conversion",
+    "std\\utilities\\pointer.traits",
+    "std\\utilities\\ptr.align",
+    "std\\utilities\\specialized.algorithms",
+    "std\\utilities\\function.objects\\arithmetic.operations",
+    "std\\utilities\\function.objects\\bind",
+    "std\\utilities\\function.objects\\bitwise.operations",
+    "std\\utilities\\function.objects\\comparisons",
+    "std\\utilities\\function.objects\\func.def",
+    "std\\utilities\\function.objects\\func.invoke",
+    "std\\utilities\\function.objects\\func.memfn",
+    "std\\utilities\\function.objects\\func.not_fn",
+    "std\\utilities\\function.objects\\func.require",
+    "std\\utilities\\function.objects\\func.search\\func.search.default",
+    "std\\utilities\\function.objects\\logical.operations",
+    "std\\utilities\\function.objects\\negators",
+    "std\\utilities\\function.objects\\refwrap",
+    "std\\utilities\\function.objects\\unord.hash",
+    "std\\utilities\\meta",
+    "std\\utilities\\ratio",
+    "std\\utilities\\time\\time.clock.req",
+    "std\\utilities\\time\\time.duration",
+    "std\\utilities\\time\\time.point",
+    "std\\utilities\\time\\time.traits",
+    "std\\utilities\\time\\hours.pass.cpp",
+    "std\\utilities\\time\\microseconds.pass.cpp",
+    "std\\utilities\\time\\milliseconds.pass.cpp",
+    "std\\utilities\\time\\minutes.pass.cpp",
+    "std\\utilities\\time\\nanoseconds.pass.cpp",
+    "std\\utilities\\time\\seconds.pass.cpp",
+    #    "std\\utilities\\charconv", #partial, does not exist yet
+    "std\\strings\\char.traits",
+    "std\\strings\\c.strings\\cstring.pass.cpp", #partial
+    "std\\strings\\c.strings\\cwchar.pass.cpp", #partial
+    "std\\iterators\\iterator.container",
+    "std\\iterators\\iterator.primitives",
+    "std\\iterators\\iterator.range",
+    "std\\iterators\\iterator.requirements",
+    "std\\iterators\\iterator.synopsis",
+    "std\\iterators\\iterators.general",
+    "std\\iterators\\predef.iterators\\move.iterators",
+    "std\\iterators\\predef.iterators\\reverse.iterators",
+    "std\\algorithms\\alg.c.library",
+    "std\\algorithms\\alg.modifying.operations",
+    "std\\algorithms\\algorithms.general",
+    "std\\algorithms\\alg.nonmodifying\\alg.copy",
+    "std\\algorithms\\alg.nonmodifying\\alg.fill",
+    "std\\algorithms\\alg.nonmodifying\\alg.generate",
+    "std\\algorithms\\alg.nonmodifying\\alg.move",
+    "std\\algorithms\\alg.nonmodifying\\alg.random.sample",
+    "std\\algorithms\\alg.nonmodifying\\alg.random.shuffle",
+    "std\\algorithms\\alg.nonmodifying\\alg.remove",
+    "std\\algorithms\\alg.nonmodifying\\alg.replace",
+    "std\\algorithms\\alg.nonmodifying\\alg.reverse",
+    "std\\algorithms\\alg.nonmodifying\\alg.rotate",
+    "std\\algorithms\\alg.nonmodifying\\alg.swap",
+    "std\\algorithms\\alg.nonmodifying\\alg.transform",
+    "std\\algorithms\\alg.nonmodifying\\alg.unique",
+    "std\\algorithms\\alg.sorting\\alg.binary.search",
+    "std\\algorithms\\alg.sorting\\alg.clamp",
+    "std\\algorithms\\alg.sorting\\alg.heap.operations",
+    "std\\algorithms\\alg.sorting\\alg.lex.comparison",
+    "std\\algorithms\\alg.sorting\\alg.min.max",
+    "std\\algorithms\\alg.sorting\\alg.nth.element",
+    "std\\algorithms\\alg.sorting\\alg.permutation.generators",
+    "std\\algorithms\\alg.sorting\\alg.set.operations",
+    #"std\\algorithms\\alg.nonmodifying\\alg.partitions\\is_partitioned.pass.cpp",
+    #"std\\algorithms\\alg.nonmodifying\\alg.partitions\\partition.pass.cpp",
+    #"std\\algorithms\\alg.nonmodifying\\alg.partitions\\partition_copy.pass.cpp",
+    #"std\\algorithms\\alg.nonmodifying\\alg.partitions\\partition_point.pass.cpp",
+    "std\\algorithms\\alg.sorting\\alg.sort\\is.sorted",
+    "std\\algorithms\\alg.sorting\\alg.sort\\partial.sort.copy",
+    "std\\algorithms\\alg.sorting\\alg.sort\\partial.sort",
+    "std\\algorithms\\alg.sorting\\alg.sort\\sort",
+    "std\\algorithms\\alg.sorting\\alg.merge\\merge.pass.cpp",
+    "std\\algorithms\\alg.sorting\\alg.merge\\merge_comp.pass.cpp",
+    "std\\numerics\\rand\\rand.adapt",
+    "std\\numerics\\rand\\rand.eng",
+    "std\\numerics\\rand\\rand.predef",
+    "std\\numerics\\rand\\rand.req",
+    "std\\numerics\\rand\\rand.dis\\rand.dist.uni\\rand.dist.uni.int",
+    "std\\numerics\\numeric.ops",
+    "std\\numerics\\c.math\\cmath.pass.cpp", #partial
+    "std\\atomics",
+]
+
+$test_files = [
     "sys\\dummy.cpp",
 ]
 
 DEST_ROOT = "x64\\Release"
 INFRA_OBJ = "#{DEST_ROOT}\\doAssert.obj #{DEST_ROOT}\\sioctl.obj"
 APP = "#{DEST_ROOT}\\ioctlapp.exe"
+
+def walk(path)
+    if not File.directory?(path)
+        if path.end_with?(".pass.cpp")
+            $test_files << path
+        end
+        return
+    end
+    Dir.foreach(path) do |x|
+        if x == "." or x == ".."
+            next
+        end
+        walk(File.join(path, x))
+    end
+end
 
 def strip_fname(fname)
     if fname[0] == "\\"
@@ -75,16 +197,19 @@ def genDevSrc(devSrc, devName)
 end
 
 def main()
+    TEST_DIRS.each do |f|
+        walk(File.join(TEST_ROOT, f))
+    end
     File.open("generated_targets_from_gen.rb.ninja", "w") do |h|
         h.print "ninja_required_version = 1.7\n\n"
 
         h.print "build"
-        TEST_FILES.each do |fname|
+        $test_files.each do |fname|
             h.print " #{srcToDevSrc(fname)}"
         end
         h.print ": phony generated_targets_from_gen.rb.ninja\n\n"
 
-        TEST_FILES.each do |fname|
+        $test_files.each do |fname|
             obj = srcToObj(fname)
             asm = srcToAsm(fname)
             sys = srcToSys(fname)
@@ -116,19 +241,19 @@ def main()
         end
 
         h.print "build check: phony ||"
-        TEST_FILES.each do |fname|
+        $test_files.each do |fname|
             h.print " check_#{srcToRuleName(fname)}"
         end
         h.print  "\n"
 
         h.print "build check_asm: phony ||"
-        TEST_FILES.each do |fname|
+        $test_files.each do |fname|
             h.print " check_#{srcToAsm(fname).gsub("\\", ".")}"
         end
         h.print "\n"
 
         h.print "default"
-        TEST_FILES.each do |fname|
+        $test_files.each do |fname|
             sys = srcToSys(fname)
             h.print " #{sys}.signed"
         end
