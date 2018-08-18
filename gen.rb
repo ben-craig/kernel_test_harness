@@ -1,5 +1,6 @@
 TEST_FILES = [
     "\\src\\llvm\\runtimes\\libcxx\\test\\std\\nothing_to_do.pass.cpp",
+    "\\src\\llvm\\runtimes\\libcxx\\test\\std\\algorithms\\alg.nonmodifying\\mismatch\\mismatch.pass.cpp",
     "sys\\dummy.cpp",
 ]
 

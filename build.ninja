@@ -12,6 +12,7 @@ LINK_PROG="$MY_VC_BIN_DIR\link.exe"
 DUMPBIN_PROG="$MY_VC_BIN_DIR\dumpbin.exe"
 
 MY_LIBCXX_PATH=E:\build\libcxx\test_install\include\c++\v1
+MY_LIBCXX_TEST_PATH=E:\src\llvm\runtimes\libcxx\test
 
 KCCFLAGS= $
 /nologo $
@@ -49,6 +50,7 @@ KCCFLAGS= $
 /D_WIN64 $
 /DPOOL_NX_OPTIN=1 $
 /DDEBUG $
+/I"$MY_LIBCXX_TEST_PATH\support" $
 /I"sys" $
 /I"$MY_LIBCXX_PATH" $
 /I"$MY_DDK_INCLUDE\km\crt" $

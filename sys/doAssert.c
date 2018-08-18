@@ -49,7 +49,7 @@ static void global_append_int(int val)
     g_space_available -= buflen;
 }
 
-void doAssert(const char *file, int line, const char *expr)
+extern "C" void doAssert(const char *file, int line, const char *expr)
 {
     InterlockedIncrement(g_test_failures);
     global_append(ASSERTION_FAILED, ASSERTION_FAILED_LEN);
