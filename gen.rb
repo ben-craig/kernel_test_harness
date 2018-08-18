@@ -1,4 +1,5 @@
 TEST_FILES = [
+    "\\src\\llvm\\runtimes\\libcxx\\test\\std\\nothing_to_do.pass.cpp",
     "sys\\dummy.cpp",
 ]
 
@@ -6,28 +7,43 @@ DEST_ROOT = "x64\\Release"
 INFRA_OBJ = "#{DEST_ROOT}\\doAssert.obj #{DEST_ROOT}\\sioctl.obj"
 APP = "#{DEST_ROOT}\\ioctlapp.exe"
 
+def strip_fname(fname)
+    if fname[0] == "\\"
+        return fname[idx+1, fname.length]
+    end
+    return fname
+end
+
+def srcToDestRoot(fname)
+    return DEST_ROOT + "\\" + strip_fname(fname)
+end
+
 def srcToObj(fname)
-    return DEST_ROOT + "\\" + fname + ".obj"
+    return srcToDestRoot(fname) + ".obj"
 end
 
 def srcToAsm(fname)
-    return DEST_ROOT + "\\" + fname + ".asm"
+    return srcToDestRoot(fname) + ".asm"
 end
 
 def srcToSys(fname)
-    return DEST_ROOT + "\\" + fname + ".sys"
+    return srcToDestRoot(fname) + ".sys"
 end
 
 def srcToDevSrc(fname)
-    return DEST_ROOT + "\\" + fname + ".name.cpp"
+    return srcToDestRoot(fname) + ".name.cpp"
 end
 
 def srcToDevObj(fname)
-    return DEST_ROOT + "\\" + fname + ".name.obj"
+    return srcToDestRoot(fname) + ".name.obj"
 end
 
 def srcToDevName(fname)
-    return fname.gsub("\\", ".")
+    return strip_fname(fname).gsub("\\", ".")
+end
+
+def srcToRuleName(fname)
+    return strip_fname(fname).gsub("\\", ".")
 end
 
 def makedirs(*dirs)
@@ -93,14 +109,14 @@ def main()
             check_asm_rule = "check_" + asm.gsub("\\", ".")
             h.print "build #{check_asm_rule}: check_asm_for_float #{asm}\n"
 
-            h.print "build check_#{fname.gsub("\\", ".")}: check #{sys} || #{sys}.signed #{APP}\n"
+            h.print "build check_#{srcToRuleName(fname)}: check #{sys} || #{sys}.signed #{APP}\n"
             h.print "    devPath = #{devName}\n"
             h.print "\n"
         end
 
         h.print "build check: phony ||"
         TEST_FILES.each do |fname|
-            h.print " check_#{fname.gsub("\\", ".")}"
+            h.print " check_#{srcToRuleName(fname)}"
         end
         h.print  "\n"
 
