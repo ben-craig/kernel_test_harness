@@ -5,6 +5,8 @@ LONG_TERM_TODO_DIRS = [
     "std\\language.support\\support.dynamic",
     "std\\language.support\\support.rtti",
     "std\\language.support\\support.exception",
+    "std\\language.support\\cmp",   #doesn't exist yet
+    "std\\language.support\\support.start.term", # testing exit in the kernel, fun
 ]
 
 TEST_DIRS = [
@@ -13,14 +15,12 @@ TEST_DIRS = [
     "std\\language.support\\support.limits",
     "std\\language.support\\cstdint",
     "std\\language.support\\support.initlist",
-]
-TODO_TEST_DIRS = [
-    #     "std\\language.support\\cmp",   #doesn't exist yet
     "std\\language.support\\support.runtime\\cstdarg.pass.cpp",
     "std\\language.support\\support.runtime\\cstdbool.pass.cpp",
-    #     "std\\language.support\\support.start.term",
     "std\\diagnostics\\errno",
     "std\\diagnostics\\syserr\\errc.pass.cpp",
+]
+TODO_TEST_DIRS = [
     "std\\utilities\\utility",
     "std\\utilities\\tuple",
     "std\\utilities\\allocator.tag",
