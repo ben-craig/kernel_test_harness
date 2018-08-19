@@ -26,6 +26,8 @@ KCCFLAGS= $
 /Zc:wchar_t $
 /GS- $
 /Zc:forScope $
+/wd4310 $
+/wd4127 $
 /wd4290 $
 /wo4819 $
 /GR- $

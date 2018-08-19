@@ -2,10 +2,10 @@ TEST_ROOT = "\\src\\llvm\\runtimes\\libcxx\\test"
 
 TEST_DIRS = [
     "std\\language.support\\support.types",
-]
-TODO_TEST_DIRS = [
     # beware of floats in limits
     "std\\language.support\\support.limits",
+]
+TODO_TEST_DIRS = [
     "std\\language.support\\cstdint",
     # beware of allocations
     "std\\language.support\\support.dynamic",
