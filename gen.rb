@@ -2,6 +2,8 @@ TEST_ROOT = "\\src\\llvm\\runtimes\\libcxx\\test"
 
 TEST_DIRS = [
     "std\\language.support\\support.types",
+]
+TODO_TEST_DIRS = [
     # beware of floats in limits
     "std\\language.support\\support.limits",
     "std\\language.support\\cstdint",
@@ -118,7 +120,7 @@ APP = "#{DEST_ROOT}\\ioctlapp.exe"
 def walk(path)
     if not File.directory?(path)
         if path.end_with?(".pass.cpp")
-            $test_files << path
+            $test_files << path.gsub("/", "\\")
         end
         return
     end
