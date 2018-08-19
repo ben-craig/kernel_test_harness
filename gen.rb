@@ -140,7 +140,7 @@ def strip_fname(fname)
 end
 
 def srcToDestRoot(fname)
-    return DEST_ROOT + "\\" + strip_fname(fname)
+    return File.join(DEST_ROOT, strip_fname(fname)).gsub("/", "\\")
 end
 
 def srcToObj(fname)
