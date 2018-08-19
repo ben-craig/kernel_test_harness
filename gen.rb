@@ -1,17 +1,20 @@
 TEST_ROOT = "\\src\\llvm\\runtimes\\libcxx\\test"
 
+LONG_TERM_TODO_DIRS = [
+    # beware of allocations
+    "std\\language.support\\support.dynamic",
+    "std\\language.support\\support.rtti",
+    "std\\language.support\\support.exception",
+]
+
 TEST_DIRS = [
     "std\\language.support\\support.types",
     # beware of floats in limits
     "std\\language.support\\support.limits",
     "std\\language.support\\cstdint",
+    "std\\language.support\\support.initlist",
 ]
 TODO_TEST_DIRS = [
-    # beware of allocations
-    "std\\language.support\\support.dynamic",
-    #     "std\\language.support\\support.rtti",
-    #     "std\\language.support\\support.exception",
-    "std\\language.support\\support.initlist",
     #     "std\\language.support\\cmp",   #doesn't exist yet
     "std\\language.support\\support.runtime\\cstdarg.pass.cpp",
     "std\\language.support\\support.runtime\\cstdbool.pass.cpp",
