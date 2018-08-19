@@ -4,9 +4,9 @@ TEST_DIRS = [
     "std\\language.support\\support.types",
     # beware of floats in limits
     "std\\language.support\\support.limits",
+    "std\\language.support\\cstdint",
 ]
 TODO_TEST_DIRS = [
-    "std\\language.support\\cstdint",
     # beware of allocations
     "std\\language.support\\support.dynamic",
     #     "std\\language.support\\support.rtti",
