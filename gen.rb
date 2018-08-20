@@ -19,16 +19,16 @@ TEST_DIRS = [
     "std\\language.support\\support.runtime\\cstdbool.pass.cpp",
     "std\\diagnostics\\errno",
     "std\\diagnostics\\syserr\\errc.pass.cpp",
-]
-TODO_TEST_DIRS = [
-    "std\\utilities\\utility",
-    "std\\utilities\\tuple",
     "std\\utilities\\allocator.tag",
     "std\\utilities\\allocator.traits",
     "std\\utilities\\allocator.uses",
     "std\\utilities\\pointer.conversion",
     "std\\utilities\\pointer.traits",
     "std\\utilities\\ptr.align",
+]
+TODO_TEST_DIRS = [
+    #"std\\utilities\\utility",
+    #"std\\utilities\\tuple",
     "std\\utilities\\specialized.algorithms",
     "std\\utilities\\function.objects\\arithmetic.operations",
     "std\\utilities\\function.objects\\bind",
