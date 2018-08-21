@@ -25,25 +25,25 @@ TEST_DIRS = [
     "std\\utilities\\pointer.conversion",
     "std\\utilities\\pointer.traits",
     "std\\utilities\\ptr.align",
-]
-TODO_TEST_DIRS = [
-    #"std\\utilities\\utility",
-    #"std\\utilities\\tuple",
     "std\\utilities\\specialized.algorithms",
     "std\\utilities\\function.objects\\arithmetic.operations",
-    "std\\utilities\\function.objects\\bind",
     "std\\utilities\\function.objects\\bitwise.operations",
     "std\\utilities\\function.objects\\comparisons",
     "std\\utilities\\function.objects\\func.def",
     "std\\utilities\\function.objects\\func.invoke",
     "std\\utilities\\function.objects\\func.memfn",
-    "std\\utilities\\function.objects\\func.not_fn",
     "std\\utilities\\function.objects\\func.require",
     "std\\utilities\\function.objects\\func.search\\func.search.default",
     "std\\utilities\\function.objects\\logical.operations",
     "std\\utilities\\function.objects\\negators",
-    "std\\utilities\\function.objects\\refwrap",
     "std\\utilities\\function.objects\\unord.hash",
+]
+TODO_TEST_DIRS = [
+    "std\\utilities\\function.objects\\bind",
+    "std\\utilities\\function.objects\\refwrap",
+    "std\\utilities\\function.objects\\func.not_fn",
+    #"std\\utilities\\utility",
+    #"std\\utilities\\tuple",
     "std\\utilities\\meta",
     "std\\utilities\\ratio",
     "std\\utilities\\time\\time.clock.req",
@@ -238,7 +238,7 @@ def main()
 
             h.print "build #{asm}: asm_dump #{sys} || #{sys}.signed\n"
             check_asm_rule = "check_" + asm.gsub("\\", ".")
-            h.print "build #{check_asm_rule}: check_asm_for_float #{asm}\n"
+            h.print "build #{check_asm_rule}: check_asm_for_float #{asm} || x64\\Release\\asm_checker.exe\n"
 
             h.print "build check_#{srcToRuleName(fname)}: check #{sys} || #{sys}.signed #{APP}\n"
             h.print "    devPath = #{devName}\n"

@@ -98,7 +98,7 @@ UCCFLAGS= $
 /Zl $
 /Gz $
 /Zi $
-/Od $
+/O2 $
 /Oy- $
 /MD $
 /D_WIN32_WINNT=0x0601 $
@@ -178,6 +178,13 @@ build x64\Release\ioctlapp.exe | x64\Release\ioctlapp.exe.pdb: ulink $
     x64\Release\install.obj $
     x64\Release\testapp.obj
 
+
+build x64\Release\asm_checker.obj: ucompile asm_checker\asm_checker.cpp
+build x64\Release\asm_checker.obj.pdb: dummy_dep x64\Release\asm_checker.obj
+
+build x64\Release\asm_checker.exe | x64\Release\asm_checker.exe.pdb: ulink $
+    x64\Release\asm_checker.obj
+
 # kernel builds
 build x64\Release\sioctl.obj: kcompile sys\sioctl.c
 build x64\Release\sioctl.obj.pdb: dummy_dep x64\Release\sioctl.obj
@@ -192,7 +199,7 @@ rule asm_dump
     description = ASM_DUMP $out
 
 rule check_asm_for_float
-    command = cmd /c findstr xmm $in && exit /b 1 || exit /b 0
+    command = x64\Release\asm_checker.exe $in
     description = CHECK_ASM_FOR_FLOAT $in
 
 rule check
