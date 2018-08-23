@@ -37,17 +37,8 @@ TEST_DIRS = [
     "std\\utilities\\function.objects\\logical.operations",
     "std\\utilities\\function.objects\\negators",
     "std\\utilities\\function.objects\\unord.hash",
-]
-TODO_TEST_DIRS = [
-    "std\\utilities\\function.objects\\bind",
-    "std\\utilities\\function.objects\\refwrap",
-    "std\\utilities\\function.objects\\func.not_fn",
-    #"std\\utilities\\utility",
-    #"std\\utilities\\tuple",
-    "std\\utilities\\meta",
     "std\\utilities\\ratio",
     "std\\utilities\\time\\time.clock.req",
-    "std\\utilities\\time\\time.duration",
     "std\\utilities\\time\\time.point",
     "std\\utilities\\time\\time.traits",
     "std\\utilities\\time\\hours.pass.cpp",
@@ -56,6 +47,15 @@ TODO_TEST_DIRS = [
     "std\\utilities\\time\\minutes.pass.cpp",
     "std\\utilities\\time\\nanoseconds.pass.cpp",
     "std\\utilities\\time\\seconds.pass.cpp",
+]
+TODO_TEST_DIRS = [
+    "std\\utilities\\function.objects\\bind",
+    "std\\utilities\\function.objects\\refwrap",
+    "std\\utilities\\function.objects\\func.not_fn",
+    #"std\\utilities\\utility",
+    #"std\\utilities\\tuple",
+    "std\\utilities\\meta",
+    "std\\utilities\\time\\time.duration",
     #    "std\\utilities\\charconv", #partial, does not exist yet
     "std\\strings\\char.traits",
     "std\\strings\\c.strings\\cstring.pass.cpp", #partial
@@ -142,6 +142,13 @@ def strip_fname(fname)
     return fname
 end
 
+def scrub_fname(fname)
+    tmpName = fname.gsub("+", "__plus__")
+    tmpName.gsub!("-", "__minus__")
+    tmpName.gsub!("=", "__eq__")
+    return tmpName
+end
+
 def srcToDestRoot(fname)
     return File.join(DEST_ROOT, strip_fname(fname)).gsub("/", "\\")
 end
@@ -151,11 +158,11 @@ def srcToObj(fname)
 end
 
 def srcToAsm(fname)
-    return srcToDestRoot(fname) + ".asm"
+    return srcToDestRoot(scrub_fname(fname)) + ".asm"
 end
 
 def srcToSys(fname)
-    return srcToDestRoot(fname) + ".sys"
+    return srcToDestRoot(scrub_fname(fname)) + ".sys"
 end
 
 def srcToDevSrc(fname)

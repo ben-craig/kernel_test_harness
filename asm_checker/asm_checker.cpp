@@ -31,7 +31,7 @@ int main(int argc, char **argv)
         if(current_line.find("xmm") != std::string::npos)
         {
             std::cerr<<"Found xmm\n";
-            std::cerr<<current_line;
+            std::cerr<<current_line<<"\n";
             exit(-1);
         }
     }
