@@ -50,6 +50,10 @@ TEST_DIRS = [
     "std\\strings\\char.traits",
     "std\\strings\\c.strings\\cstring.pass.cpp", #partial
     "std\\strings\\c.strings\\cwchar.pass.cpp", #partial
+    "std\\iterators\\iterator.container",
+    "std\\iterators\\iterator.primitives",
+    "std\\iterators\\iterator.range",
+    "std\\iterators\\iterator.requirements",
 ]
 TODO_TEST_DIRS = [
     "std\\utilities\\function.objects\\bind",
@@ -60,10 +64,6 @@ TODO_TEST_DIRS = [
     "std\\utilities\\meta",
     "std\\utilities\\time\\time.duration",
     #    "std\\utilities\\charconv", #partial, does not exist yet
-    "std\\iterators\\iterator.container",
-    "std\\iterators\\iterator.primitives",
-    "std\\iterators\\iterator.range",
-    "std\\iterators\\iterator.requirements",
     "std\\iterators\\iterator.synopsis",
     "std\\iterators\\iterators.general",
     "std\\iterators\\predef.iterators\\move.iterators",
@@ -210,9 +210,16 @@ DOS_DEVICE_NAME = %q{const wchar_t *DOS_DEVICE_NAME = L"\\\\DosDevices\\\\}
 
 def genDevSrc(devSrc, devName)
     makedirs(File.dirname(devSrc.gsub("\\", "/")))
+    target_contents =
+        NT_DEVICE_NAME + devName + "\";\n" +
+        DOS_DEVICE_NAME + devName + "\";\n";
+    if File.file?(devSrc)
+        if IO.read(devSrc) == target_contents
+            return
+        end
+    end
     File.open(devSrc, "w") do |h|
-        h.print NT_DEVICE_NAME + devName + "\";\n"
-        h.print DOS_DEVICE_NAME + devName + "\";\n"
+        h.print target_contents
     end
 end
 
@@ -222,12 +229,6 @@ def main()
     end
     File.open("generated_targets_from_gen.rb.ninja", "w") do |h|
         h.print "ninja_required_version = 1.7\n\n"
-
-        h.print "build"
-        $test_files.each do |fname|
-            h.print " #{srcToDevSrc(fname)}"
-        end
-        h.print ": phony generated_targets_from_gen.rb.ninja\n\n"
 
         $test_files.each do |fname|
             obj = srcToObj(fname)
