@@ -47,6 +47,9 @@ TEST_DIRS = [
     "std\\utilities\\time\\minutes.pass.cpp",
     "std\\utilities\\time\\nanoseconds.pass.cpp",
     "std\\utilities\\time\\seconds.pass.cpp",
+    "std\\strings\\char.traits",
+    "std\\strings\\c.strings\\cstring.pass.cpp", #partial
+    "std\\strings\\c.strings\\cwchar.pass.cpp", #partial
 ]
 TODO_TEST_DIRS = [
     "std\\utilities\\function.objects\\bind",
@@ -57,9 +60,6 @@ TODO_TEST_DIRS = [
     "std\\utilities\\meta",
     "std\\utilities\\time\\time.duration",
     #    "std\\utilities\\charconv", #partial, does not exist yet
-    "std\\strings\\char.traits",
-    "std\\strings\\c.strings\\cstring.pass.cpp", #partial
-    "std\\strings\\c.strings\\cwchar.pass.cpp", #partial
     "std\\iterators\\iterator.container",
     "std\\iterators\\iterator.primitives",
     "std\\iterators\\iterator.range",
@@ -173,6 +173,14 @@ def srcToDevObj(fname)
     return srcToDestRoot(fname) + ".name.obj"
 end
 
+def srcToCheckFile(fname)
+    return srcToDestRoot(scrub_fname(fname)) + ".check.log"
+end
+
+def srcToAsmCheckFile(fname)
+    return srcToDestRoot(scrub_fname(fname)) + ".asm.check.log"
+end
+
 def srcToDevName(fname)
     return strip_fname(fname).gsub("\\", ".")
 end
@@ -243,24 +251,23 @@ def main()
 
             h.print "build #{sys}.signed: signtool #{sys}\n"
 
-            h.print "build #{asm}: asm_dump #{sys} || #{sys}.signed\n"
-            check_asm_rule = "check_" + asm.gsub("\\", ".")
-            h.print "build #{check_asm_rule}: check_asm_for_float #{asm} || x64\\Release\\asm_checker.exe\n"
+            h.print "build #{asm}: asm_dump #{sys} | #{sys}.signed\n"
+            h.print "build #{srcToAsmCheckFile(fname)}: check_asm_for_float #{asm} | x64\\Release\\asm_checker.exe\n"
 
-            h.print "build check_#{srcToRuleName(fname)}: check #{sys} || #{sys}.signed #{APP}\n"
+            h.print "build #{srcToCheckFile(fname)}: check #{sys} | #{sys}.signed #{APP}\n"
             h.print "    devPath = #{devName}\n"
             h.print "\n"
         end
 
-        h.print "build check: phony ||"
+        h.print "build check: phony |"
         $test_files.each do |fname|
-            h.print " check_#{srcToRuleName(fname)}"
+            h.print " #{srcToCheckFile(fname)}"
         end
         h.print  "\n"
 
-        h.print "build check_asm: phony ||"
+        h.print "build check_asm: phony |"
         $test_files.each do |fname|
-            h.print " check_#{srcToAsm(fname).gsub("\\", ".")}"
+            h.print " #{srcToAsmCheckFile(fname)}"
         end
         h.print "\n"
 

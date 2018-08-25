@@ -199,11 +199,11 @@ rule asm_dump
     description = ASM_DUMP $out
 
 rule check_asm_for_float
-    command = x64\Release\asm_checker.exe $in
+    command = cmd /c x64\Release\asm_checker.exe $in && echo $in > $out
     description = CHECK_ASM_FOR_FLOAT $in
 
 rule check
-    command = x64\Release\ioctlapp.exe $in $devPath
+    command = cmd /c x64\Release\ioctlapp.exe $in $devPath && echo $in > $out
     description = CHECK $in $devPath
 
 # generator rule and build

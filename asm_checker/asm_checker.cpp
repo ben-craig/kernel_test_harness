@@ -13,20 +13,19 @@ int main(int argc, char **argv)
     const char *asm_fname = argv[1];
     std::ifstream fin(asm_fname);
     std::string current_line;
-    bool in_memcpy = false;
+    bool in_optimized = false;
     while(std::getline(fin, current_line))
     {
-        if("memcpy:" == current_line)
+        if("memcpy:" == current_line || "memset:" == current_line)
         {
-            in_memcpy = true;
+            in_optimized = true;
             continue;
         }
-        if(in_memcpy && current_line.size() > 3 && current_line.front() != ' ' && current_line.back() == ':')
+        if(in_optimized && current_line.size() > 3 && current_line.front() != ' ' && current_line.back() == ':')
         {
-            in_memcpy = false;
-            continue;
+            in_optimized = false;
         }
-        if(in_memcpy)
+        if(in_optimized)
             continue;
         if(current_line.find("xmm") != std::string::npos)
         {
