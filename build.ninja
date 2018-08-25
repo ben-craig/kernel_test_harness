@@ -30,6 +30,7 @@ KCCFLAGS= $
 /wd4310 $
 /wd4127 $
 /wd4290 $
+/wd4172 $
 /wo4819 $
 /GR- $
 /EHs-c- $
