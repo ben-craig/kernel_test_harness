@@ -58,6 +58,9 @@ TEST_DIRS = [
     "std\\iterators\\iterators.general",
     "std\\iterators\\predef.iterators\\move.iterators",
     "std\\iterators\\predef.iterators\\reverse.iterators",
+    "std\\algorithms\\alg.c.library",
+    "std\\algorithms\\alg.modifying.operations",
+    "std\\algorithms\\algorithms.general",
 ]
 TODO_TEST_DIRS = [
     "std\\utilities\\function.objects\\bind",
@@ -68,9 +71,6 @@ TODO_TEST_DIRS = [
     "std\\utilities\\meta",
     "std\\utilities\\time\\time.duration",
     #    "std\\utilities\\charconv", #partial, does not exist yet
-    "std\\algorithms\\alg.c.library",
-    "std\\algorithms\\alg.modifying.operations",
-    "std\\algorithms\\algorithms.general",
     "std\\algorithms\\alg.nonmodifying\\alg.copy",
     "std\\algorithms\\alg.nonmodifying\\alg.fill",
     "std\\algorithms\\alg.nonmodifying\\alg.generate",
