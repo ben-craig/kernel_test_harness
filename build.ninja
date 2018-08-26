@@ -16,6 +16,7 @@ MY_LIBCXX_TEST_PATH=E:\src\llvm\runtimes\libcxx\test
 
 KCCFLAGS= $
 /nologo $
+/showIncludes $
 /TP $
 /c $
 /std:c++latest $
@@ -87,6 +88,7 @@ Ntstrsafe.lib
 
 UCCFLAGS= $
 /nologo $
+/showIncludes $
 /c $
 /W3 $
 /WX $
