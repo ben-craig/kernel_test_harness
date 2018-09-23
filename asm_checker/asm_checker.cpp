@@ -16,7 +16,11 @@ int main(int argc, char **argv)
     bool in_optimized = false;
     while(std::getline(fin, current_line))
     {
-        if("memcpy:" == current_line || "memset:" == current_line)
+        if(
+            "memcpy:" == current_line ||
+            "memset:" == current_line ||
+            "__std_reverse_trivially_swappable_4:" == current_line ||
+            "__std_swap_ranges_trivially_swappable_noalias:" == current_line)
         {
             in_optimized = true;
             continue;

@@ -1,6 +1,6 @@
 ninja_required_version = 1.7
 
-MY_VC_DIR=C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.14.26428
+MY_VC_DIR=C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.15.26726
 MY_VC_BIN_DIR=$MY_VC_DIR\bin\Hostx64\x64
 MY_DDK_VER=10.0.17134.0
 MY_DDK_INCLUDE=C:\Program Files (x86)\Windows Kits\10\Include\$MY_DDK_VER
@@ -32,13 +32,12 @@ KCCFLAGS= $
 /wd4127 $
 /wd4290 $
 /wd4172 $
+/wd4180 $
 /wo4819 $
 /GR- $
 /EHs-c- $
-/Zl $
 /Gz $
 /kernel $
-/Zi $
 /Od $
 /Oy- $
 /D_WIN32_WINNT=0x0601 $
@@ -55,9 +54,14 @@ KCCFLAGS= $
 /D_WIN64 $
 /DPOOL_NX_OPTIN=1 $
 /DDEBUG $
+/D_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS $
+/D_LIBCPP_HAS_NO_INT128=1 $
+/D_HAS_AUTO_PTR_ETC=1 $
+/D_ENABLE_EXTENDED_ALIGNED_STORAGE=1 $
 /I"$MY_LIBCXX_TEST_PATH\support" $
 /I"sys" $
-/I"$MY_LIBCXX_PATH" $
+/I"$MY_VC_DIR\include" $
+/I"$MY_DDK_INCLUDE\ucrt" $
 /I"$MY_DDK_INCLUDE\km\crt" $
 /I"$MY_DDK_INCLUDE\km" $
 /I"$MY_DDK_INCLUDE\shared"
@@ -80,11 +84,14 @@ KLINK_FLAGS= $
 /DEBUGTYPE:cv,fixup $
 /DEBUG $
 /LIBPATH:"$MY_DDK_LIB\km\x64" $
+/LIBPATH:"$MY_VC_DIR\lib\x64" $
 BufferOverflowFastFailK.lib $
 ntoskrnl.lib $
 hal.lib $
 wmilib.lib $
-Ntstrsafe.lib
+Ntstrsafe.lib $
+libcpmt.lib $
+libcmt.lib
 
 UCCFLAGS= $
 /nologo $
@@ -158,7 +165,7 @@ rule ulink
 #preprocess= /P /Fi$out.i
 
 rule kcompile
-    command = $CC $KCCFLAGS /Fo$out /Fd$out.pdb $in
+    command = $CC $KCCFLAGS /Fo$out $in
     description = KCXX $out
     deps = msvc
 
@@ -190,10 +197,8 @@ build x64\Release\asm_checker.exe | x64\Release\asm_checker.exe.pdb: ulink $
 
 # kernel builds
 build x64\Release\sioctl.obj: kcompile sys\sioctl.c
-build x64\Release\sioctl.obj.pdb: dummy_dep x64\Release\sioctl.obj
 
 build x64\Release\doAssert.obj: kcompile sys\doAssert.c
-build x64\Release\doAssert.obj.pdb: dummy_dep x64\Release\doAssert.obj
 
 
 # check rules

@@ -61,16 +61,9 @@ TEST_DIRS = [
     "std\\algorithms\\alg.c.library",
     "std\\algorithms\\alg.modifying.operations",
     "std\\algorithms\\algorithms.general",
-]
-TODO_TEST_DIRS = [
-    "std\\utilities\\function.objects\\bind",
-    "std\\utilities\\function.objects\\refwrap",
-    "std\\utilities\\function.objects\\func.not_fn",
-    #"std\\utilities\\utility",
-    #"std\\utilities\\tuple",
-    "std\\utilities\\meta",
-    "std\\utilities\\time\\time.duration",
-    #    "std\\utilities\\charconv", #partial, does not exist yet
+#    "std\\utilities\\utility",
+#    "std\\utilities\\tuple",
+#    "std\\utilities\\meta",
     "std\\algorithms\\alg.nonmodifying\\alg.copy",
     "std\\algorithms\\alg.nonmodifying\\alg.fill",
     "std\\algorithms\\alg.nonmodifying\\alg.generate",
@@ -92,6 +85,13 @@ TODO_TEST_DIRS = [
     "std\\algorithms\\alg.sorting\\alg.nth.element",
     "std\\algorithms\\alg.sorting\\alg.permutation.generators",
     "std\\algorithms\\alg.sorting\\alg.set.operations",
+]
+TODO_TEST_DIRS = [
+    "std\\utilities\\function.objects\\bind",
+    "std\\utilities\\function.objects\\refwrap",
+    "std\\utilities\\function.objects\\func.not_fn",
+    "std\\utilities\\time\\time.duration",
+    #    "std\\utilities\\charconv", #partial, does not exist yet
     #"std\\algorithms\\alg.nonmodifying\\alg.partitions\\is_partitioned.pass.cpp",
     #"std\\algorithms\\alg.nonmodifying\\alg.partitions\\partition.pass.cpp",
     #"std\\algorithms\\alg.nonmodifying\\alg.partitions\\partition_copy.pass.cpp",
@@ -242,12 +242,13 @@ def main()
 
             h.print "# #{fname}\n"
             h.print "build #{obj}: kcompile #{fname}\n"
-            h.print "build #{obj}.pdb: dummy_dep #{obj}\n"
+            #h.print "build #{obj}.pdb: dummy_dep #{obj}\n"
 
             h.print "build #{devObj}: kcompile #{devSrc}\n"
-            h.print "build #{devObj}.pdb: dummy_dep #{devObj}\n"
+            #h.print "build #{devObj}.pdb: dummy_dep #{devObj}\n"
 
             h.print "build #{sys} | #{sys}.pdb: klink $\n"
+            #h.print "build #{sys}: klink $\n"
             h.print "    #{obj} #{devObj} #{INFRA_OBJ}\n"
 
             h.print "build #{sys}.signed: signtool #{sys}\n"
