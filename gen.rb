@@ -85,17 +85,11 @@ TEST_DIRS = [
     "std\\algorithms\\alg.sorting\\alg.nth.element",
     "std\\algorithms\\alg.sorting\\alg.permutation.generators",
     "std\\algorithms\\alg.sorting\\alg.set.operations",
-]
-TODO_TEST_DIRS = [
+
     "std\\utilities\\function.objects\\bind",
     "std\\utilities\\function.objects\\refwrap",
     "std\\utilities\\function.objects\\func.not_fn",
     "std\\utilities\\time\\time.duration",
-    #    "std\\utilities\\charconv", #partial, does not exist yet
-    #"std\\algorithms\\alg.nonmodifying\\alg.partitions\\is_partitioned.pass.cpp",
-    #"std\\algorithms\\alg.nonmodifying\\alg.partitions\\partition.pass.cpp",
-    #"std\\algorithms\\alg.nonmodifying\\alg.partitions\\partition_copy.pass.cpp",
-    #"std\\algorithms\\alg.nonmodifying\\alg.partitions\\partition_point.pass.cpp",
     "std\\algorithms\\alg.sorting\\alg.sort\\is.sorted",
     "std\\algorithms\\alg.sorting\\alg.sort\\partial.sort.copy",
     "std\\algorithms\\alg.sorting\\alg.sort\\partial.sort",
@@ -108,8 +102,10 @@ TODO_TEST_DIRS = [
     "std\\numerics\\rand\\rand.req",
     "std\\numerics\\rand\\rand.dis\\rand.dist.uni\\rand.dist.uni.int",
     "std\\numerics\\numeric.ops",
-    "std\\numerics\\c.math\\cmath.pass.cpp", #partial
+    #"std\\numerics\\c.math\\cmath.pass.cpp", #partial
     "std\\atomics",
+]
+TODO_TEST_DIRS = [
 ]
 
 $test_files = [
