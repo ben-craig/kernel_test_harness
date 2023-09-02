@@ -8,3 +8,4 @@ user_mode/x64/
 user_mode/x86/
 kernel_mode/kernel_mode.vcxproj.user
 generated_targets_from_gen.rb.ninja
+build/
