@@ -7,4 +7,4 @@ project ("kernel_test_harness")
 # Include sub-projects.
 add_subdirectory ("asm_checker")
 add_subdirectory ("exe")
-#add_subdirectory ("sys")
+add_subdirectory ("sys")
