@@ -86,5 +86,6 @@ set(MY_KLINK_CMD
 
 add_custom_target (dummy_test_original_sys ALL
     ${MY_KLINK_CMD}
+    COMMAND signtool.exe sign -q -fd SHA256 -p placeholderPassword -f ../MsvcStlTestingCert.pfx dummy.sys
     DEPENDS dummy_test_obj ksys_common
     BYPRODUCTS "dummy.sys" "dummy.sys.pdb")
