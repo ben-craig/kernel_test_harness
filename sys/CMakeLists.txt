@@ -5,7 +5,7 @@ set(WDK_INCLUDE_DIRECTORY
 )
 
 # Add source to this project's executable.
-add_library (ksys_common OBJECT
+add_library (ksys_common STATIC
     "sioctl.cpp"
     "sioctl.h"
     "doAssert.cpp"
@@ -13,7 +13,9 @@ add_library (ksys_common OBJECT
     "cassert")
 
 cmake_policy(SET CMP0092 NEW) # Do not add /W3 to CMAKE_<LANG>_FLAGS by default
-target_compile_options(ksys_common PRIVATE /W4 /WX /std:c++latest)
+target_compile_options(ksys_common PRIVATE /EHs-c- /W4 /WX /std:c++latest)
+
+set_target_properties(ksys_common PROPERTIES LIBRARY_OUTPUT_DIRECTORY sys)
 
 target_include_directories(ksys_common PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}
