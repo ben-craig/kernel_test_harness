@@ -10,6 +10,8 @@ set(STL_INCLUDE_DIRECTORY
     "C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Tools/MSVC/14.38.32919/include"
 )
 
+add_custom_target(check)
+
 function(add_kernel_test_file path)
     string(REGEX MATCH "^${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/(.*)\.cpp$" dont_care "${path}")
     set(SLASHED_NAME "${CMAKE_MATCH_1}")
@@ -105,6 +107,13 @@ function(add_kernel_test_file path)
         ../asm_checker/asm_checker.exe ${UNDER_NAME}.sys.asm && echo ${UNDER_NAME}.sys.asm > ${UNDER_NAME}.sys.asm.log
         DEPENDS ${UNDER_NAME}_asm asm_checker
         BYPRODUCTS "${UNDER_NAME}.sys.asm.log")
+
+    add_custom_target (${UNDER_NAME}_check # not ALL
+        ../exe/ioctlapp.exe ${UNDER_NAME}.sys ${SLASHED_NAME} && echo ${UNDER_NAME}.sys > ${UNDER_NAME}.sys.log
+        DEPENDS ${UNDER_NAME}_sys
+        BYPRODUCTS "${UNDER_NAME}.sys.log")
+
+    add_dependencies (check ${UNDER_NAME}_check)
 endfunction()
 
 set(TEST_DIRS
