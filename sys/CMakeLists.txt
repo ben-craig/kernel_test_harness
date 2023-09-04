@@ -39,4 +39,5 @@ target_compile_definitions(ksys_common PRIVATE
     _WIN64
     POOL_NX_OPTIN=1
     DEBUG
+    _ITERATOR_DEBUG_LEVEL=0
 )

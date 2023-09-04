@@ -19,6 +19,9 @@ extern const wchar_t *DOS_DEVICE_NAME;
 #endif
 
 extern "C" {
+
+int __isa_available = 0; //__ISA_AVAILABLE_X86;
+
 // Device driver routine declarations.
 DRIVER_INITIALIZE DriverEntry;
 
