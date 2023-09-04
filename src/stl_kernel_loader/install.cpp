@@ -81,7 +81,12 @@ static void install_and_start_driver(SC_HANDLE scm, const char* path, const char
         ));
 
     if (driver.h == nullptr) {
-        throw_get_last_error("CreateService");
+        std::string msg = "CreateService(";
+        msg+=path;
+        msg+=", ";
+        msg+=name;
+        msg+=")";
+        throw_get_last_error(msg);
     }
 
     auto success = StartService(driver.h, 0 /*num args*/, nullptr /*args*/);

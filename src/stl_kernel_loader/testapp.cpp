@@ -34,7 +34,7 @@ bool do_test(const char* path) {
     // except the \ and : are replaced with ".".  Shhh.  Don't tell anyone.
     std::string driverName = path;
     std::replace_if(
-        driverName.begin(), driverName.end(), [](char c) { return c == '\\' || c == ':'; }, '.');
+        driverName.begin(), driverName.end(), [](char c) { return c == '\\' || c == '/' || c == ':'; }, '.');
 
     driver_loader sentry(path, driverName.c_str());
     DeviceOpener dev(driverName.c_str());

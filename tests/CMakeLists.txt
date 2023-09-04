@@ -14,8 +14,15 @@ add_custom_target(check)
 
 function(add_kernel_test_file path)
     string(REGEX MATCH "^${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/(.*)\.cpp$" dont_care "${path}")
-    set(SLASHED_NAME "${CMAKE_MATCH_1}")
-    string(REPLACE "/" "__" UNDER_NAME "${SLASHED_NAME}")
+    set(UNDER_NAME "${CMAKE_MATCH_1}")
+    string(REPLACE "/" "__" UNDER_NAME "${UNDER_NAME}")
+
+    get_filename_component(TARGET_ABS_PATH "tests/${UNDER_NAME}.sys"
+                           REALPATH BASE_DIR "${CMAKE_BINARY_DIR}")
+
+    string(REPLACE "/" "." DOS_NAME "${TARGET_ABS_PATH}")
+    string(REPLACE "\\" "." DOS_NAME "${DOS_NAME}")
+    string(REPLACE ":" "." DOS_NAME "${DOS_NAME}")
 
     add_library (${UNDER_NAME}_lib STATIC ${path})
 
@@ -41,7 +48,7 @@ function(add_kernel_test_file path)
 
     target_compile_options(${UNDER_NAME}_lib PRIVATE /kernel /wd5040)
     target_compile_definitions(${UNDER_NAME}_lib PRIVATE
-        KERNEL_TEST_NAME=L"${SLASHED_NAME}"
+        KERNEL_TEST_NAME=L"${DOS_NAME}"
         __STL_IS_KERNEL=1
         _SILENCE_CXX20_CISO646_REMOVED_WARNING
         TEST_STD_VER=26
@@ -110,7 +117,7 @@ function(add_kernel_test_file path)
         BYPRODUCTS "${UNDER_NAME}.sys.asm.log")
 
     add_custom_target (${UNDER_NAME}_check # not ALL
-        ../src/stl_kernel_loader/stl_kernel_loader.exe ${UNDER_NAME}.sys ${SLASHED_NAME} && echo ${UNDER_NAME}.sys > ${UNDER_NAME}.sys.log
+        ../src/stl_kernel_loader/stl_kernel_loader.exe ${TARGET_ABS_PATH} && echo ${UNDER_NAME}.sys > ${UNDER_NAME}.sys.log
         DEPENDS ${UNDER_NAME}_sys stl_kernel_loader
         BYPRODUCTS "${UNDER_NAME}.sys.log")
 
