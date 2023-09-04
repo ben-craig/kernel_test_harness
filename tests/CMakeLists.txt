@@ -92,12 +92,19 @@ function(add_kernel_test_file path)
 
     add_custom_target (${UNDER_NAME}_sys ALL
         ${MY_KLINK_CMD}
-        COMMAND signtool.exe sign -q -fd SHA256 -p placeholderPassword -f ../MsvcStlTestingCert.pfx ${UNDER_NAME}.sys
+        COMMAND signtool.exe sign -q -fd SHA256 -p placeholderPassword -f ../MsvcStlTestingCert.pfx ${UNDER_NAME}.sys > NUL
         DEPENDS ${UNDER_NAME}_lib ksys_common
         BYPRODUCTS "${UNDER_NAME}.sys" "${UNDER_NAME}.sys.pdb")
 
-    # TODO generate asm
-    # run asm checker
+    add_custom_target (${UNDER_NAME}_asm ALL
+        dumpbin /disasm ${UNDER_NAME}.sys /OUT:${UNDER_NAME}.sys.asm > NUL
+        DEPENDS ${UNDER_NAME}_sys
+        BYPRODUCTS "${UNDER_NAME}.sys.asm")
+
+    add_custom_target (${UNDER_NAME}_asmcheck ALL
+        ../asm_checker/asm_checker.exe ${UNDER_NAME}.sys.asm && echo ${UNDER_NAME}.sys.asm > ${UNDER_NAME}.sys.asm.log
+        DEPENDS ${UNDER_NAME}_asm asm_checker
+        BYPRODUCTS "${UNDER_NAME}.sys.asm.log")
 endfunction()
 
 set(TEST_DIRS
@@ -110,6 +117,7 @@ set(TEST_DIRS
     #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.dist/rand.dist.uni/rand.dist.uni.int
 )
 
+# Tests MSVC is excluding
 set(TEST_EXCLUSIONS
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.copy/ranges.copy.pass.cpp
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.copy/ranges.copy_backward.pass.cpp
@@ -166,6 +174,9 @@ set(TEST_EXCLUSIONS
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/robust_against_adl.compile.pass.cpp
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/robust_against_proxy_iterators_lifetime_bugs.pass.cpp
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/robust_re_difference_type.compile.pass.cpp
+)
+# Tests I'm excluding
+list(APPEND TEST_EXCLUSIONS
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/numeric.ops/numeric.ops.midpoint/midpoint.float.pass.cpp
 )
 

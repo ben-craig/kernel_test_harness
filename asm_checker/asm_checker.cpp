@@ -16,7 +16,11 @@ int main(int argc, char **argv)
     bool in_optimized = false;
     while(std::getline(fin, current_line))
     {
-        if("memcpy:" == current_line || "memset:" == current_line)
+        if("memcpy:" == current_line
+            || "memset:" == current_line
+            || "__memset_repmovs:" == current_line
+            || "__memset_query:" == current_line
+        )
         {
             in_optimized = true;
             continue;
@@ -29,6 +33,17 @@ int main(int argc, char **argv)
             continue;
         if(current_line.find("xmm") != std::string::npos)
         {
+            // allow this pattern, which is used when initializing stack arrays
+            //0000000140007F82: 0F 57 C0           xorps       xmm0,xmm0
+            //0000000140007F85: F2 0F 11 84 24 D8  movsd       mmword ptr [rsp+17D8h],xmm0
+            if(current_line.find("xorps       xmm0,xmm0") != std::string::npos)
+            {
+                continue;
+            }
+            if(current_line.find("movsd       mmword ptr") != std::string::npos)
+            {
+                continue;
+            }
             std::cerr<<"Found xmm\n";
             std::cerr<<current_line<<"\n";
             exit(-1);
