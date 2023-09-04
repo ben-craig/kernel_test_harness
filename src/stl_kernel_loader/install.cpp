@@ -8,7 +8,7 @@
 
 #include <windows.h>
 
-[[noreturn]] void throw_get_last_error(const char* routine) {
+[[noreturn]] void throw_get_last_error(const std::string &invocation) {
     auto gle                = GetLastError();
     char error_buffer[1024] = {0};
 
@@ -18,7 +18,7 @@
         nullptr /* va_list arguments */);
 
     std::string err_text = "Error: ";
-    err_text += routine;
+    err_text += invocation;
     err_text += " failed.  GetLastError = " + std::to_string(GetLastError());
     err_text += "\n";
     err_text += error_buffer;
@@ -86,7 +86,12 @@ static void install_and_start_driver(SC_HANDLE scm, const char* path, const char
 
     auto success = StartService(driver.h, 0 /*num args*/, nullptr /*args*/);
     if (!success) {
-        throw_get_last_error("StartService");
+        std::string msg = "StartService(";
+        msg+=path;
+        msg+=", ";
+        msg+=name;
+        msg+=")";
+        throw_get_last_error(msg);
     }
 }
 

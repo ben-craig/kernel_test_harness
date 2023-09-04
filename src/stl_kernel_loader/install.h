@@ -35,4 +35,4 @@ public:
     driver_loader& operator=(const scm_handle&) = delete;
 };
 
-[[noreturn]] void throw_get_last_error(const char* routine);
+[[noreturn]] void throw_get_last_error(const std::string &invocation);
