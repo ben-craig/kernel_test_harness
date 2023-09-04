@@ -17,22 +17,21 @@ function(add_kernel_test_file path)
     set(SLASHED_NAME "${CMAKE_MATCH_1}")
     string(REPLACE "/" "__" UNDER_NAME "${SLASHED_NAME}")
 
-    file(CONFIGURE OUTPUT "${UNDER_NAME}_constants.cpp" CONTENT
-        "const wchar_t *NT_DEVICE_NAME = L\"\\\\Device\\\\${SLASHED_NAME}\";\nconst wchar_t *DOS_DEVICE_NAME = L\"\\\\DosDevices\\\\${SLASHED_NAME}\";\n"
-    )
-
-    # Add source to this project's executable.
-    add_library (${UNDER_NAME}_lib STATIC
-        "${UNDER_NAME}_constants.cpp"
-        ${path})
+    add_library (${UNDER_NAME}_lib STATIC ${path})
 
     cmake_policy(SET CMP0092 NEW) # Do not add /W3 to CMAKE_<LANG>_FLAGS by default
-    target_compile_options(${UNDER_NAME}_lib PRIVATE /EHs-c- /W4 /WX /std:c++latest)
+    target_compile_options(${UNDER_NAME}_lib PRIVATE 
+        /EHs-c-
+        /W4
+        /WX
+        /std:c++latest
+        /FIstl_kernel/kernel_test_constants.h
+    )
 
     target_include_directories(${UNDER_NAME}_lib PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}
-        "${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/support"
-        ../sys
+        ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/support
+        ${CMAKE_SOURCE_DIR}/inc
         ${STL_INCLUDE_DIRECTORY}
         "C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt"
         ${WDK_INCLUDE_DIRECTORY}/km
@@ -42,6 +41,8 @@ function(add_kernel_test_file path)
 
     target_compile_options(${UNDER_NAME}_lib PRIVATE /kernel /wd5040)
     target_compile_definitions(${UNDER_NAME}_lib PRIVATE
+        KERNEL_TEST_NAME=L"${SLASHED_NAME}"
+        __STL_IS_KERNEL=1
         _SILENCE_CXX20_CISO646_REMOVED_WARNING
         TEST_STD_VER=26
         _WIN32_WINNT=0x0601
@@ -88,13 +89,13 @@ function(add_kernel_test_file path)
         "Ntstrsafe.lib"
         "/PDB:${UNDER_NAME}.sys.pdb"
         "/OUT:${UNDER_NAME}.sys"
-        "../sys/ksys_common.lib"
+        "../src/stl_kernel/ksys_common.lib"
         "${UNDER_NAME}_lib.lib"
     )
 
     add_custom_target (${UNDER_NAME}_sys ALL
         ${MY_KLINK_CMD}
-        COMMAND signtool.exe sign -q -fd SHA256 -p placeholderPassword -f ../MsvcStlTestingCert.pfx ${UNDER_NAME}.sys > NUL
+        COMMAND signtool.exe sign -q -fd SHA256 -p placeholderPassword -f ${CMAKE_SOURCE_DIR}/MsvcStlTestingCert.pfx ${UNDER_NAME}.sys > NUL
         DEPENDS ${UNDER_NAME}_lib ksys_common
         BYPRODUCTS "${UNDER_NAME}.sys" "${UNDER_NAME}.sys.pdb")
 
@@ -104,13 +105,13 @@ function(add_kernel_test_file path)
         BYPRODUCTS "${UNDER_NAME}.sys.asm")
 
     add_custom_target (${UNDER_NAME}_asmcheck ALL
-        ../asm_checker/asm_checker.exe ${UNDER_NAME}.sys.asm && echo ${UNDER_NAME}.sys.asm > ${UNDER_NAME}.sys.asm.log
+        ../src/asm_checker/asm_checker.exe ${UNDER_NAME}.sys.asm && echo ${UNDER_NAME}.sys.asm > ${UNDER_NAME}.sys.asm.log
         DEPENDS ${UNDER_NAME}_asm asm_checker
         BYPRODUCTS "${UNDER_NAME}.sys.asm.log")
 
     add_custom_target (${UNDER_NAME}_check # not ALL
-        ../exe/ioctlapp.exe ${UNDER_NAME}.sys ${SLASHED_NAME} && echo ${UNDER_NAME}.sys > ${UNDER_NAME}.sys.log
-        DEPENDS ${UNDER_NAME}_sys
+        ../src/stl_kernel_loader/stl_kernel_loader.exe ${UNDER_NAME}.sys ${SLASHED_NAME} && echo ${UNDER_NAME}.sys > ${UNDER_NAME}.sys.log
+        DEPENDS ${UNDER_NAME}_sys stl_kernel_loader
         BYPRODUCTS "${UNDER_NAME}.sys.log")
 
     add_dependencies (check ${UNDER_NAME}_check)

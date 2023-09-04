@@ -6,11 +6,8 @@ set(WDK_INCLUDE_DIRECTORY
 
 # Add source to this project's executable.
 add_library (ksys_common STATIC
-    "sioctl.cpp"
-    "sioctl.h"
-    "doAssert.cpp"
-    "assert.h"
-    "cassert")
+    "stl_kernel.cpp"
+    "doAssert.cpp")
 
 cmake_policy(SET CMP0092 NEW) # Do not add /W3 to CMAKE_<LANG>_FLAGS by default
 target_compile_options(ksys_common PRIVATE /EHs-c- /W4 /WX /std:c++latest)
@@ -18,7 +15,7 @@ target_compile_options(ksys_common PRIVATE /EHs-c- /W4 /WX /std:c++latest)
 set_target_properties(ksys_common PROPERTIES LIBRARY_OUTPUT_DIRECTORY sys)
 
 target_include_directories(ksys_common PRIVATE
-    ${CMAKE_CURRENT_LIST_DIR}
+    ${CMAKE_SOURCE_DIR}/inc
     ${WDK_INCLUDE_DIRECTORY}/km
     ${WDK_INCLUDE_DIRECTORY}/km/crt
     ${WDK_INCLUDE_DIRECTORY}/shared
@@ -26,6 +23,7 @@ target_include_directories(ksys_common PRIVATE
 
 target_compile_options(ksys_common PRIVATE /kernel /wd5040)
 target_compile_definitions(ksys_common PRIVATE
+    __STL_IS_KERNEL=1
     _WIN32_WINNT=0x0601
     NTDDI_VERSION=0x06010000
     _AMD64_

@@ -7,7 +7,7 @@ string(REPLACE "/RTC1" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
 # Include sub-projects.
-add_subdirectory ("asm_checker")
-add_subdirectory ("exe")
-add_subdirectory ("sys")
+add_subdirectory ("src/asm_checker")
+add_subdirectory ("src/stl_kernel")
+add_subdirectory ("src/stl_kernel_loader")
 add_subdirectory ("tests")
