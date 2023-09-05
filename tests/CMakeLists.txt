@@ -94,6 +94,7 @@ function(add_kernel_test_file path)
         "hal.lib"
         "wmilib.lib"
         "Ntstrsafe.lib"
+        "msvcprt.lib"
         "/PDB:${UNDER_NAME}.sys.pdb"
         "/OUT:${UNDER_NAME}.sys"
         "../src/stl_kernel/ksys_common.lib"
@@ -127,8 +128,8 @@ endfunction()
 set(TEST_DIRS
     #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/numeric.ops
-    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.adapt
-    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.eng
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.adapt
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.eng
     #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.predef
     #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.req
     #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.dist/rand.dist.uni/rand.dist.uni.int
@@ -195,6 +196,45 @@ set(TEST_EXCLUSIONS
 # Tests I'm excluding
 list(APPEND TEST_EXCLUSIONS
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/numeric.ops/numeric.ops.midpoint/midpoint.float.pass.cpp
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.adapt/rand.adapt.disc/ctor_result_type.pass.cpp
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.adapt/rand.adapt.disc/ctor_sseq.pass.cpp
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.adapt/rand.adapt.disc/io.pass.cpp
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.adapt/rand.adapt.disc/seed_sseq.pass.cpp
+
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.adapt/rand.adapt.ibits/ctor_result_type.pass.cpp
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.adapt/rand.adapt.ibits/ctor_sseq.pass.cpp
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.adapt/rand.adapt.ibits/io.pass.cpp
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.adapt/rand.adapt.ibits/seed_sseq.pass.cpp
+
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.adapt/rand.adapt.shuf/assign.pass.cpp
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.adapt/rand.adapt.shuf/copy.pass.cpp
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.adapt/rand.adapt.shuf/ctor_engine_copy.pass.cpp
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.adapt/rand.adapt.shuf/ctor_engine_move.pass.cpp
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.adapt/rand.adapt.shuf/ctor_result_type.pass.cpp
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.adapt/rand.adapt.shuf/ctor_sseq.pass.cpp
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.adapt/rand.adapt.shuf/default.pass.cpp
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.adapt/rand.adapt.shuf/discard.pass.cpp
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.adapt/rand.adapt.shuf/eval.pass.cpp
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.adapt/rand.adapt.shuf/io.pass.cpp
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.adapt/rand.adapt.shuf/result_type.pass.cpp
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.adapt/rand.adapt.shuf/seed_result_type.pass.cpp
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.adapt/rand.adapt.shuf/seed_sseq.pass.cpp
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.adapt/rand.adapt.shuf/values.pass.cpp
+
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.eng/rand.eng.lcong/ctor_result_type.pass.cpp
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.eng/rand.eng.lcong/ctor_sseq.pass.cpp
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.eng/rand.eng.lcong/io.pass.cpp
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.eng/rand.eng.lcong/seed_sseq.pass.cpp
+
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.eng/rand.eng.mers/ctor_result_type.pass.cpp
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.eng/rand.eng.mers/ctor_sseq.pass.cpp
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.eng/rand.eng.mers/io.pass.cpp
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.eng/rand.eng.mers/seed_sseq.pass.cpp
+
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.eng/rand.eng.sub/ctor_result_type.pass.cpp
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.eng/rand.eng.sub/ctor_sseq.pass.cpp
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.eng/rand.eng.sub/io.pass.cpp
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.eng/rand.eng.sub/seed_sseq.pass.cpp
 )
 
 set(sources "")
