@@ -20,6 +20,8 @@ int main(int argc, char **argv)
             || "memset:" == current_line
             || "__memset_repmovs:" == current_line
             || "__memset_query:" == current_line
+            || "__std_find_trivial_4:" == current_line
+            || "__std_count_trivial_4:" == current_line
         )
         {
             in_optimized = true;

@@ -15,8 +15,8 @@ set(check_depends "")
 set(build_depends "")
 
 function(add_kernel_test_file path)
-    string(REGEX MATCH "^${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/(.*)\.cpp$" dont_care "${path}")
-    set(UNDER_NAME "${CMAKE_MATCH_1}")
+    string(REGEX MATCH "^${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/.*/([^/]*)/([^/]*)\.cpp$" dont_care "${path}")
+    set(UNDER_NAME "${CMAKE_MATCH_1}__${CMAKE_MATCH_2}")
     string(REPLACE "/" "__" UNDER_NAME "${UNDER_NAME}")
 
     get_filename_component(TARGET_ABS_PATH "tests/${UNDER_NAME}.sys"
@@ -33,6 +33,7 @@ function(add_kernel_test_file path)
         /EHs-c-
         /W4
         /WX
+        /GR-
         /std:c++latest
         /FIstl_kernel/kernel_test_constants.h
     )
@@ -66,8 +67,8 @@ function(add_kernel_test_file path)
         WIN64
         _WIN64
         POOL_NX_OPTIN=1
-        DEBUG
         _ITERATOR_DEBUG_LEVEL=0
+        _SECURE_SCL=0
     )
     set_target_properties(${UNDER_NAME}_lib PROPERTIES LIBRARY_OUTPUT_DIRECTORY tests)
 
@@ -137,7 +138,7 @@ set(TEST_DIRS
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.c.library
     #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.nonmodifying
-    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/algorithms.general
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/algorithms.results
 
@@ -182,7 +183,7 @@ set(TEST_EXCLUSIONS
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.heap.operations/make.heap/ranges_make_heap.pass.cpp
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.heap.operations/pop.heap/ranges_pop_heap.pass.cpp
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.heap.operations/push.heap/ranges_push_heap.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.heap.operations/sort.heap/ranges_sort_heap.pass
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.heap.operations/sort.heap/ranges_sort_heap.pass.cpp
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.merge/inplace_merge_comp.pass.cpp
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.merge/ranges_inplace_merge.pass.cpp
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.merge/ranges_merge.pass.cpp
@@ -249,6 +250,10 @@ list(APPEND TEST_EXCLUSIONS
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.eng/rand.eng.sub/ctor_sseq.pass.cpp
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.eng/rand.eng.sub/io.pass.cpp
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.eng/rand.eng.sub/seed_sseq.pass.cpp
+
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.merge/inplace_merge.pass.cpp
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.merge/inplace_merge_comp.pass.cpp
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.merge/ranges_inplace_merge.pass.cpp
 )
 
 set(sources "")
@@ -262,6 +267,7 @@ foreach(dir IN LISTS TEST_DIRS)
         ${dir}/*.cpp
     )
     list(FILTER local_sources EXCLUDE REGEX "\.fail\.cpp$")
+    list(FILTER local_sources EXCLUDE REGEX "assert\.")
     list(APPEND sources "${local_sources}")
 endforeach()
 
