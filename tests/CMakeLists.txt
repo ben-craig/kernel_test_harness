@@ -10,7 +10,9 @@ set(STL_INCLUDE_DIRECTORY
     "C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Tools/MSVC/14.38.32919/include"
 )
 
-add_custom_target(check)
+set(asm_depends "")
+set(check_depends "")
+set(build_depends "")
 
 function(add_kernel_test_file path)
     string(REGEX MATCH "^${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/(.*)\.cpp$" dont_care "${path}")
@@ -101,35 +103,47 @@ function(add_kernel_test_file path)
         "${UNDER_NAME}_lib.lib"
     )
 
-    add_custom_target (${UNDER_NAME}_sys ALL
-        ${MY_KLINK_CMD}
+    add_custom_command (OUTPUT ${UNDER_NAME}.sys ${UNDER_NAME}.sys.pdb
+        COMMAND ${MY_KLINK_CMD}
         COMMAND signtool.exe sign -q -fd SHA256 -p placeholderPassword -f ${CMAKE_SOURCE_DIR}/MsvcStlTestingCert.pfx ${UNDER_NAME}.sys > NUL
         DEPENDS ${UNDER_NAME}_lib ksys_common
-        BYPRODUCTS "${UNDER_NAME}.sys" "${UNDER_NAME}.sys.pdb")
+    )
+    set(build_depends ${build_depends} "${UNDER_NAME}.sys" PARENT_SCOPE)
 
-    add_custom_target (${UNDER_NAME}_asm ALL
-        dumpbin /disasm ${UNDER_NAME}.sys /OUT:${UNDER_NAME}.sys.asm > NUL
-        DEPENDS ${UNDER_NAME}_sys
-        BYPRODUCTS "${UNDER_NAME}.sys.asm")
+    add_custom_command (OUTPUT ${UNDER_NAME}.sys.asm
+        COMMAND dumpbin /disasm ${UNDER_NAME}.sys /OUT:${UNDER_NAME}.sys.asm > NUL
+        DEPENDS ${UNDER_NAME}.sys
+    )
 
-    add_custom_target (${UNDER_NAME}_asmcheck ALL
-        ../src/asm_checker/asm_checker.exe ${UNDER_NAME}.sys.asm && echo ${UNDER_NAME}.sys.asm > ${UNDER_NAME}.sys.asm.log
-        DEPENDS ${UNDER_NAME}_asm asm_checker
-        BYPRODUCTS "${UNDER_NAME}.sys.asm.log")
+    add_custom_command (OUTPUT ${UNDER_NAME}.sys.asm.log
+        COMMAND ../src/asm_checker/asm_checker.exe ${UNDER_NAME}.sys.asm
+        COMMAND echo ${UNDER_NAME}.sys.asm > ${UNDER_NAME}.sys.asm.log
+        DEPENDS ${UNDER_NAME}.sys.asm asm_checker
+    )
+    set(asm_depends ${asm_depends} "${UNDER_NAME}.sys.asm.log" PARENT_SCOPE)
 
-    add_custom_target (${UNDER_NAME}_check # not ALL
-        ../src/stl_kernel_loader/stl_kernel_loader.exe ${TARGET_ABS_PATH} && echo ${UNDER_NAME}.sys > ${UNDER_NAME}.sys.log
-        DEPENDS ${UNDER_NAME}_sys stl_kernel_loader
-        BYPRODUCTS "${UNDER_NAME}.sys.log")
+    add_custom_command (OUTPUT ${UNDER_NAME}.sys.log
+        COMMAND ../src/stl_kernel_loader/stl_kernel_loader.exe ${TARGET_ABS_PATH}
+        COMMAND echo ${UNDER_NAME}.sys > ${UNDER_NAME}.sys.log
+        DEPENDS ${UNDER_NAME}.sys stl_kernel_loader
+    )
 
-    add_dependencies (check ${UNDER_NAME}_check)
+    set(check_depends ${check_depends} "${UNDER_NAME}.sys.log" PARENT_SCOPE)
 endfunction()
 
 set(TEST_DIRS
     #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/numeric.ops
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.adapt
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.eng
+
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.c.library
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.nonmodifying
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/algorithms.general
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/algorithms.results
+
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/numeric.ops
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.adapt
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.eng
     #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.predef
     #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.req
     #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.dist/rand.dist.uni/rand.dist.uni.int
@@ -256,3 +270,7 @@ list(REMOVE_ITEM sources ${TEST_EXCLUSIONS})
 foreach(source IN LISTS sources)
     add_kernel_test_file(${source})
 endforeach()
+
+add_custom_target(asm DEPENDS ${asm_depends})
+add_custom_target(check DEPENDS ${check_depends})
+add_custom_target(build DEPENDS ${build_depends})

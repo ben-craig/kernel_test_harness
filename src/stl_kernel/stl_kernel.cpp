@@ -47,6 +47,7 @@ extern "C" {
 
 // symbol that is usually provided by C lib, but fake provided here
 int __isa_available = 0; //__ISA_AVAILABLE_X86;
+int __isa_enabled = 0;
 
 // Device driver routine declarations.
 DRIVER_INITIALIZE DriverEntry;
