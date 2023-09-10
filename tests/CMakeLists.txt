@@ -15,7 +15,7 @@ set(check_depends "")
 set(build_depends "")
 
 function(add_kernel_test_file path)
-    string(REGEX MATCH "^${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/.*/([^/]*)/([^/]*)\.cpp$" dont_care "${path}")
+    string(REGEX MATCH "^${CMAKE_SOURCE_DIR}/llvm-project/libcxx/.*/([^/]*)/([^/]*)\.cpp$" dont_care "${path}")
     set(UNDER_NAME "${CMAKE_MATCH_1}__${CMAKE_MATCH_2}")
     string(REPLACE "/" "__" UNDER_NAME "${UNDER_NAME}")
 
@@ -133,21 +133,14 @@ function(add_kernel_test_file path)
 endfunction()
 
 set(TEST_DIRS
-    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms
 
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.c.library
-    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.nonmodifying
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/algorithms.general
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/algorithms.results
-
-    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/numeric.ops
-    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.adapt
-    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.eng
-    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.predef
-    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.req
-    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.dist/rand.dist.uni/rand.dist.uni.int
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/numeric.ops
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.adapt
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.eng
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.predef
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.req
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.dist/rand.dist.uni/rand.dist.uni.int
 )
 
 # Tests MSVC is excluding
@@ -210,6 +203,10 @@ set(TEST_EXCLUSIONS
 )
 # Tests I'm excluding
 list(APPEND TEST_EXCLUSIONS
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.dist/rand.dist.uni/rand.dist.uni.int/eval_param.pass.cpp
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.dist/rand.dist.uni/rand.dist.uni.int/io.pass.cpp
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.dist/rand.dist.uni/rand.dist.uni.int/eval.pass.cpp
+
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/numeric.ops/numeric.ops.midpoint/midpoint.float.pass.cpp
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.adapt/rand.adapt.disc/ctor_result_type.pass.cpp
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.adapt/rand.adapt.disc/ctor_sseq.pass.cpp
@@ -251,6 +248,8 @@ list(APPEND TEST_EXCLUSIONS
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.eng/rand.eng.sub/io.pass.cpp
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.eng/rand.eng.sub/seed_sseq.pass.cpp
 
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/numerics/rand/rand.predef/knuth_b.pass.cpp
+
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.merge/inplace_merge.pass.cpp
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.merge/inplace_merge_comp.pass.cpp
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.merge/ranges_inplace_merge.pass.cpp
@@ -260,6 +259,14 @@ list(APPEND TEST_EXCLUSIONS
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.sort/stable.sort/stable_sort_comp.pass.cpp
 
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.sort/sort/sort.pass.cpp # Too much work
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.move/move.pass.cpp # Too much work
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.move/move_backward.pass.cpp # Too much work
+
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.random.shuffle/random_shuffle.pass.cpp
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.random.shuffle/random_shuffle_rand.pass.cpp
+
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.partitions/stable_partition.pass.cpp
+    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.partitions/ranges_stable_partition.pass.cpp
 
 )
 

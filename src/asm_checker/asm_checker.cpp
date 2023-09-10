@@ -26,6 +26,8 @@ int main(int argc, char **argv)
             || current_line == "`anonymous namespace'::_Minmax_element<2,`anonymous namespace'::_Minmax_traits_4>:"
             || current_line == "`anonymous namespace'::_Minmax_element<3,`anonymous namespace'::_Minmax_traits_4>:"
             || current_line == "__std_reverse_trivially_swappable_4:"
+            || current_line == "__std_reverse_copy_trivially_copyable_4:"
+            || current_line == "__std_swap_ranges_trivially_swappable_noalias:"
         )
         {
             in_optimized = true;
