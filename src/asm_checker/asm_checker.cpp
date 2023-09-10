@@ -28,6 +28,7 @@ int main(int argc, char **argv)
             || current_line == "__std_reverse_trivially_swappable_4:"
             || current_line == "__std_reverse_copy_trivially_copyable_4:"
             || current_line == "__std_swap_ranges_trivially_swappable_noalias:"
+            || current_line == "?_MP_Mul@std@@YAXQEA_K_K1@Z:"
         )
         {
             in_optimized = true;

@@ -97,7 +97,7 @@ function(add_kernel_test_file path)
         "hal.lib"
         "wmilib.lib"
         "Ntstrsafe.lib"
-        "msvcprt.lib"
+        "libcpmt.lib"
         "/PDB:${UNDER_NAME}.sys.pdb"
         "/OUT:${UNDER_NAME}.sys"
         "../src/stl_kernel/ksys_common.lib"
