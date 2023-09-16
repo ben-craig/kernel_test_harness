@@ -1,0 +1,25 @@
+// Copyright (c) Microsoft Corporation.
+// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+
+#include <stddef.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+extern int* g_test_failures;
+extern char* g_output_buffer;
+extern size_t g_space_available;
+void doAssert(const char* file, int line, const char* expr);
+
+#undef assert
+#define assert(x)                             \
+    do {                                      \
+        if (!(x)) {                           \
+            doAssert(__FILE__, __LINE__, #x); \
+        }                                     \
+    } while(0)
+
+#ifdef __cplusplus
+}
+#endif
