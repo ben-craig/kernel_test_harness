@@ -144,6 +144,7 @@ set(TEST_DIRS
 )
 
 # Tests MSVC is excluding
+# Consider trying C:\dev\STL\tests\std\tests\P0896R4_* tests instead
 set(TEST_EXCLUSIONS
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.copy/ranges.copy.pass.cpp
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.copy/ranges.copy_backward.pass.cpp
