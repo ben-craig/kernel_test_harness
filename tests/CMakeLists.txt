@@ -166,13 +166,13 @@ set(TEST_EXCLUSIONS
     #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.nonmodifying/alg.all_of/ranges.all_of.pass.cpp
     #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.nonmodifying/alg.any_of/ranges.any_of.pass.cpp
     #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.nonmodifying/alg.equal/ranges.equal.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.nonmodifying/alg.find.end/ranges.find_end.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.nonmodifying/alg.foreach/ranges.for_each.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.nonmodifying/alg.foreach/ranges.for_each_n.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.nonmodifying/alg.none_of/ranges.none_of.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.nonmodifying/alg.search/ranges.search.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.nonmodifying/alg.search/ranges.search_n.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.nonmodifying/mismatch/ranges_mismatch.pass.cpp
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.nonmodifying/alg.find.end/ranges.find_end.pass.cpp
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.nonmodifying/alg.foreach/ranges.for_each.pass.cpp
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.nonmodifying/alg.foreach/ranges.for_each_n.pass.cpp
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.nonmodifying/alg.none_of/ranges.none_of.pass.cpp
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.nonmodifying/alg.search/ranges.search.pass.cpp
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.nonmodifying/alg.search/ranges.search_n.pass.cpp
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.nonmodifying/mismatch/ranges_mismatch.pass.cpp
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.clamp/ranges.clamp.pass.cpp
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.heap.operations/make.heap/ranges_make_heap.pass.cpp
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.heap.operations/pop.heap/ranges_pop_heap.pass.cpp
