@@ -32,10 +32,10 @@ function(add_kernel_test_file path)
     target_compile_options(${UNDER_NAME}_lib PRIVATE 
         /EHs-c-
         /W4
-        /WX
         /GR-
         /std:c++latest
         /FIstl_kernel/kernel_test_constants.h
+        /bigobj
     )
 
     target_include_directories(${UNDER_NAME}_lib PRIVATE
@@ -146,26 +146,26 @@ set(TEST_DIRS
 # Tests MSVC is excluding
 # Consider trying C:\dev\STL\tests\std\tests\P0896R4_* tests instead
 set(TEST_EXCLUSIONS
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.copy/ranges.copy.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.copy/ranges.copy_backward.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.copy/ranges.copy_n.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.fill/ranges.fill.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.move/ranges.move.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.move/ranges.move_backward.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.partitions/ranges_partition_copy.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.random.sample/ranges_sample.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.random.shuffle/ranges_shuffle.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.remove/ranges.remove.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.remove/ranges.remove_if.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.replace/ranges.replace.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.rotate/ranges.rotate_copy.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.rotate/ranges_rotate.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.swap/ranges.swap_ranges.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.transform/ranges.transform.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.unique/ranges_unique_copy.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.nonmodifying/alg.all_of/ranges.all_of.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.nonmodifying/alg.any_of/ranges.any_of.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.nonmodifying/alg.equal/ranges.equal.pass.cpp
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.copy/ranges.copy.pass.cpp
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.copy/ranges.copy_backward.pass.cpp
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.copy/ranges.copy_n.pass.cpp
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.fill/ranges.fill.pass.cpp
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.move/ranges.move.pass.cpp
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.move/ranges.move_backward.pass.cpp
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.partitions/ranges_partition_copy.pass.cpp
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.random.sample/ranges_sample.pass.cpp
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.random.shuffle/ranges_shuffle.pass.cpp
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.remove/ranges.remove.pass.cpp
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.remove/ranges.remove_if.pass.cpp
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.replace/ranges.replace.pass.cpp
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.rotate/ranges.rotate_copy.pass.cpp
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.rotate/ranges_rotate.pass.cpp
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.swap/ranges.swap_ranges.pass.cpp
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.transform/ranges.transform.pass.cpp
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.modifying.operations/alg.unique/ranges_unique_copy.pass.cpp
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.nonmodifying/alg.all_of/ranges.all_of.pass.cpp
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.nonmodifying/alg.any_of/ranges.any_of.pass.cpp
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.nonmodifying/alg.equal/ranges.equal.pass.cpp
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.nonmodifying/alg.find.end/ranges.find_end.pass.cpp
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.nonmodifying/alg.foreach/ranges.for_each.pass.cpp
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.nonmodifying/alg.foreach/ranges.for_each_n.pass.cpp

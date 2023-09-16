@@ -13,12 +13,11 @@ extern size_t g_space_available;
 void doAssert(const char* file, int line, const char* expr);
 
 #undef assert
-#define assert(x)                             \
-    do {                                      \
-        if (!(x)) {                           \
-            doAssert(__FILE__, __LINE__, #x); \
-        }                                     \
-    } while(0)
+
+#define assert(expression) (void)(            \
+        (!!(expression)) ||                   \
+        (doAssert(__FILE__, __LINE__, #expression), 0) \
+    )
 
 #ifdef __cplusplus
 }
