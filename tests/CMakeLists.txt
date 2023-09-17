@@ -182,7 +182,7 @@ set(TEST_EXCLUSIONS
     #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.min.max/minmax_init_list_comp.pass.cpp
     #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.nth.element/ranges_nth_element.pass.cpp
     #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.partitions/ranges.is_partitioned.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.set.operations/set.difference/ranges_set_difference.pass.cpp
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.set.operations/set.difference/ranges_set_difference.pass.cpp
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.set.operations/set.intersection/ranges_set_intersection.pass.cpp
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.set.operations/set.symmetric.difference/ranges_set_symmetric_difference.pass.cpp
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.set.operations/set.union/ranges_set_union.pass.cpp
