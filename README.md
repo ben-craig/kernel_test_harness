@@ -1,17 +1,15 @@
-IOCTL
-=====
+This repo tests the MSVC STL in a Windows x64 kernel, with the libc++ test suite.
+This is for research purposes for wg21 freestanding papers.
 
-This sample demonstrates the usage of four different types of IOCTLs (METHOD\_IN\_DIRECT, METHOD\_OUT\_DIRECT, METHOD\_NEITHER, and METHOD\_BUFFERED).
+At time of writing, this project has lots of hard coded paths to SDKs and toolchains.  You may need to tweak these.
 
-The sample shows how the user input and output buffers specified in the **DeviceIoControl** function call are handled, in each case, by the I/O subsystem and the driver.
+Building:
+`ninja asm` will build all the tests, and verify that the generated binaries aren't using floating point in unexpected ways.
 
-The sample consists of a legacy device driver and a Win32 console test application. The test application opens a handle to the device exposed by the driver and makes all four different **DeviceIoControl** calls, one after another. To understand how the IRP fields are set the I/O manager, you should run the checked build version of the driver and look at the debug output.
+Test machine setup:
+1. Turn off secure boot in your bios / UEFI.
+1. Enable test signing by running `bcdedit /set TESTSIGNING ON` as an administrator
+1. Run the provided `genCert.bat` to generate a code signing certificate and install it on your local machine.
 
-**Note** This sample driver is not a Plug and Play driver. This is a minimal driver meant to demonstrate a feature of the operating system. Neither this driver nor its sample programs are intended for use in a production environment. Instead, they are intended for educational purposes and as a skeleton driver.
-
-
-Run the sample
---------------
-
-To test this driver, copy the test app, Ioctlapp.exe, and the driver to the same directory, and run the application. The application will automatically load the driver, if it's not already loaded, and interact with the driver. When you exit the application, the driver will be stopped, unloaded and removed.
-
+Testing:
+`ninja check` will run the tests on the current machine.  You'll need admin privileges for this.
