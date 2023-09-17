@@ -183,19 +183,18 @@ set(TEST_EXCLUSIONS
     #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.nth.element/ranges_nth_element.pass.cpp
     #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.partitions/ranges.is_partitioned.pass.cpp
     #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.set.operations/set.difference/ranges_set_difference.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.set.operations/set.intersection/ranges_set_intersection.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.set.operations/set.symmetric.difference/ranges_set_symmetric_difference.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.set.operations/set.union/ranges_set_union.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.sort/is.sorted/ranges.is_sorted.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.sort/is.sorted/ranges.is_sorted_until.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.sort/partial.sort.copy/ranges_partial_sort_copy.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.sort/partial.sort.copy/ranges_partial_sort_copy.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.sort/partial.sort/partial_sort.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.sort/partial.sort/partial_sort_comp.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/algorithms.results/in_found_result.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/algorithms.results/min_max_result.pass.cpp
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.set.operations/set.intersection/ranges_set_intersection.pass.cpp
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.set.operations/set.symmetric.difference/ranges_set_symmetric_difference.pass.cpp
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.set.operations/set.union/ranges_set_union.pass.cpp
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.sort/is.sorted/ranges.is_sorted.pass.cpp
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.sort/is.sorted/ranges.is_sorted_until.pass.cpp
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.sort/partial.sort.copy/ranges_partial_sort_copy.pass.cpp
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.sort/partial.sort/partial_sort.pass.cpp
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/alg.sorting/alg.sort/partial.sort/partial_sort_comp.pass.cpp
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/algorithms.results/in_found_result.pass.cpp
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/algorithms.results/min_max_result.pass.cpp
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/algorithms.results/no_unique_address.compile.pass.cpp
-    ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/ranges_robust_against_dangling.pass.cpp
+    #${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/ranges_robust_against_dangling.pass.cpp
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/robust_against_adl.compile.pass.cpp
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/robust_against_proxy_iterators_lifetime_bugs.pass.cpp
     ${CMAKE_SOURCE_DIR}/llvm-project/libcxx/test/std/algorithms/robust_re_difference_type.compile.pass.cpp
